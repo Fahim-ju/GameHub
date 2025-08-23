@@ -143,3 +143,31 @@ export default function Navbar() {
     </Disclosure>
   );
 }
+
+export const NavbarNew = () => {
+    
+  return (
+    <>
+      <nav className="block w-full px-4 py-3 mx-auto bg-gradient-to-r from-purple-600 to-blue-600 shadow-md lg:px-8 lg:py-3">
+        <div className="container flex flex-wrap items-center justify-between text-slate-800">
+          <div className="flex shrink-0 items-center">
+            <PuzzlePieceIcon className="h-8 w-8 text-indigo-500" />
+            <span className="ml-2 font-['Press_Start_2P'] text-lg text-white">GameHub</span>
+          </div>
+          <div className="flex-1 max-w-lg px-4">
+            <div className="relative">
+              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
+                <MagnifyingGlassIcon className="h-5 w-5 text-gray-400" aria-hidden="true" />
+              </div>
+              <input
+                type="text"
+                className="block w-full rounded-lg border-0 bg-white/5 py-2 pl-10 pr-3 text-white placeholder:text-gray-400 focus:bg-white/10 focus:ring-2 focus:ring-indigo-500 sm:text-sm sm:leading-6"
+                placeholder="Search games..."
+              />
+            </div>
+          </div>
+        </div>
+      </nav>
+    </>
+  );
+};
