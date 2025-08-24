@@ -1,4 +1,4 @@
-import type { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import Square from "../component/tictactoe/Square";
 import { useTicTacToe } from "../core/enum/hooks/tictactoe";
 import Button from "../component/tictactoe/Button";
@@ -29,8 +29,8 @@ function TicTacToe() {
         ))}
       </div>
       <div className={`turn ${turn === "x" ? "left" : "right"}`}>
-        {/* <Square clsName="x" />
-        <Square clsName="o" /> */}
+        <Square clsName="x" />
+        <Square clsName="o" />
       </div>
       <AnimatePresence>
         {winner && (
