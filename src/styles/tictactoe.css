@@ -255,18 +255,115 @@
     left: 50%;
   }
 
-  .winner {
-    position: absolute;
-    width: 100vw;
-    height: 100vh;
-    top: 0;
-    left: 0;
-    display: grid;
-    place-items: center;
-    background-color: rgba(0, 0, 0, 0.7);
-  }
+.winner {
+  position: fixed;
+  width: 100vw;
+  height: 100vh;
+  top: 0;
+  left: 0;
+  display: grid;
+  place-items: center;
+  background-color: rgba(13, 12, 34, 0.85);
+  backdrop-filter: blur(8px);
+  z-index: 1000;
+}
 
-  .winner .text {
+.winner .text {
+  background: rgba(30, 27, 75, 0.95);
+  border: 2px solid rgba(124, 58, 237, 0.4);
+  border-radius: 24px;
+  padding: 3.5rem;
+  text-align: center;
+  box-shadow: 
+    0 0 40px rgba(124, 58, 237, 0.2),
+    inset 0 0 30px rgba(124, 58, 237, 0.1);
+  backdrop-filter: blur(16px);
+  min-width: 400px;
+  min-height: 500px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.winner h2 {
+  color: #F8FAFC;
+  font-size: 2.5rem;
+  margin-bottom: 2rem;
+  text-shadow: 
+    0 0 20px rgba(124, 58, 237, 0.5),
+    0 0 40px rgba(124, 58, 237, 0.3);
+  font-weight: 800;
+  letter-spacing: 1px;
+  font-family: 'Orbitron', sans-serif;
+  line-height: 1.2;
+  padding: 0 1rem;
+}
+
+.winner .win {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 2.5rem 0;
+  padding: 2rem;
+  background: rgba(124, 58, 237, 0.1);
+  border-radius: 20px;
+  border: 1px solid rgba(124, 58, 237, 0.2);
+}
+
+.winner .win .square {
+  width: 100px;
+  height: 100px;
+  pointer-events: none;
+  border-color: rgba(124, 58, 237, 0.6);
+  background: rgba(30, 27, 75, 0.8);
+  transition: all 0.3s ease;
+}
+
+.winner .win .square.x::before,
+.winner .win .square.x::after {
+  background: #7C3AED;
+  box-shadow: 
+    0 0 15px rgba(124, 58, 237, 0.5),
+    0 0 30px rgba(124, 58, 237, 0.3);
+  width: 12px;
+}
+
+.winner .win .square.o {
+  border-color: #7C3AED;
+  border-width: 12px;
+  box-shadow: 
+    0 0 15px rgba(124, 58, 237, 0.5),
+    0 0 30px rgba(124, 58, 237, 0.3);
+}
+
+.winner button {
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%) !important;
+  color: white !important;
+  border: none !important;
+  padding: 1.2rem 3rem !important;
+  width: 280px !important;
+  font-size: 1.3rem !important;
+  border-radius: 16px !important;
+  cursor: pointer;
+  transition: all 0.3s ease !important;
+  box-shadow: 
+    0 4px 15px rgba(124, 58, 237, 0.3),
+    inset 0 2px 4px rgba(255, 255, 255, 0.1);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: bold !important;
+  font-family: 'Orbitron', sans-serif !important;
+}
+
+.winner button:hover {
+  transform: translateY(-2px);
+  box-shadow: 
+    0 8px 25px rgba(124, 58, 237, 0.4),
+    inset 0 2px 4px rgba(255, 255, 255, 0.2) !important;
+  background: linear-gradient(135deg, #9333EA 0%, #7C3AED 100%) !important;
+  letter-spacing: 2px;
+}  .winner .text {
     background: #111;
     width: 70%;
     max-width: 400px;

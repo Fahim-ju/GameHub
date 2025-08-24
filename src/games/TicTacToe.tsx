@@ -8,6 +8,13 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
   console.log("Game settings:", gameSettings);
 
   const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, changeDifficulty } = useTicTacToe(gameSettings);
+  
+  const getWinnerName = () => {
+    if (winner === 'x | o') return "It's a Tie!";
+    if (winner === 'x') return `${gameSettings.player1Name} Wins!`;
+    return isAiMode ? 'Computer Wins!' : `${gameSettings.player2Name} Wins!`;
+  };
+
   return (
     <div className="tic-tac-toe">
       <h1>
@@ -33,34 +40,48 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
       </div>
       <AnimatePresence>
         {winner && (
-          <motion.div key={"parent-box"} initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="winner">
+          <motion.div 
+              key={"parent-box"} 
+              initial={{ opacity: 0 }} 
+              animate={{ opacity: 1 }} 
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="winner"
+            >
             <motion.div
               key={"child-box"}
-              initial={{ scale: 0 }}
-              animate={{ scale: 1 }}
+              initial={{ scale: 0, y: 20 }}
+              animate={{ scale: 1, y: 0 }}
               exit={{
-                scale: 0,
+                scale: 0.8,
                 opacity: 0,
+                y: 20,
+              }}
+              transition={{
+                type: "spring",
+                damping: 15,
+                stiffness: 200,
               }}
               className="text"
             >
               <motion.h2
                 initial={{
                   scale: 0,
-                  y: 100,
+                  y: 20,
                 }}
                 animate={{
                   scale: 1,
                   y: 0,
                   transition: {
-                    y: {
-                      delay: 0.7,
-                    },
-                    duration: 0.7,
+                    type: "spring",
+                    damping: 12,
+                    stiffness: 200,
+                    delay: 0.3,
+                    duration: 0.5,
                   },
                 }}
               >
-                {winner === "x | o" ? "Tie :/" : "Winner!! :)"}
+                {getWinnerName()}
               </motion.h2>
               <motion.div
                 initial={{
