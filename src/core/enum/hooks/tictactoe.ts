@@ -35,7 +35,7 @@ export const useTicTacToe = (): UseTicTacToeReturn => {
     setSquares(s);
     setTurn(turn === "x" ? "o" : "x");
     const W = checkWinner(s);
-    if (W && W === "x | o") {
+    if (W && (W === "x" || W === "o")) {
       setWinner(W);
     } else if (checkEndTheGame(s)) {
       setWinner("x | o");

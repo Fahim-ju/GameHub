@@ -5,7 +5,6 @@ import Button from "../component/tictactoe/Button";
 
 function TicTacToe() {
   const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, toggleAiMode, changeDifficulty } = useTicTacToe();
-
   return (
     <div className="tic-tac-toe">
       <h1>
