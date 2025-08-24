@@ -1,6 +1,8 @@
 import { Disclosure, Menu, Transition } from "@headlessui/react";
 import { Bars3Icon, MagnifyingGlassIcon, XMarkIcon, PuzzlePieceIcon } from "@heroicons/react/24/outline";
 import { Fragment } from "react";
+import { createScope, animate, createSpring, createDraggable, Scope, stagger, text } from "animejs";
+import { useRef, useState, useEffect } from "react";
 
 const navigation = [
   { name: "Games", href: "#", current: true },
@@ -145,15 +147,80 @@ export default function Navbar() {
 }
 
 export const NavbarNew = () => {
-    
+  const root = useRef(null);
+  const scope = useRef<Scope>(null);
+  const [rotations, setRotations] = useState(0);
+
+  useEffect(() => {
+    scope.current = createScope({ root }).add((self) => {
+      // Every anime.js instances declared here are now scopped to <div ref={root}>
+
+      // Created a bounce animation loop
+      // animate(".logoWithTitle", {
+      //   scale: [
+      //     { to: 1.25, ease: "inOut(3)", duration: 200 },
+      //     { to: 1, ease: createSpring({ stiffness: 300 }) },
+      //   ],
+      //   loop: true,
+      //   loopDelay: 250,
+      // });
+
+      // Make the logo draggable around its center
+      // createDraggable(".logoWithTitle", {
+      //   container: [0, 0, 0, 0],
+      //   releaseEase: createSpring({ stiffness: 200 }),
+      // });
+
+      // Register function methods to be used outside the useEffect
+      // self?.add("rotateLogo", (i) => {
+      //   animate(".logoWithTitle", {
+      //     rotate: i * 360,
+      //     ease: "out(4)",
+      //     duration: 1500,
+      //   });
+      // });
+
+      const { chars } = text.split(".title", { words: false, chars: true });
+
+      animate(chars, {
+        // Property keyframes
+        y: [
+          { to: "-1.75rem", ease: "outExpo", duration: 800 },
+          { to: 0, ease: "outBounce", duration: 1000, delay: 200 },
+        ],
+        // Property specific parameters
+        rotate: {
+          from: "-1turn",
+          delay: 50,
+        },
+        delay: stagger(50),
+        ease: "inOutCirc",
+        loopDelay: 3000,
+        loop: true,
+      });
+    });
+
+    // Properly cleanup all anime.js instances declared inside the scope
+    return () => scope.current?.revert();
+  }, []);
+
+  const handleClick = () => {
+    setRotations((prev) => {
+      const newRotations = prev + 1;
+      // Animate logo rotation on click using the method declared inside the scope
+      scope.current?.methods.rotateLogo(newRotations);
+      return newRotations;
+    });
+  };
+
   return (
     <>
-      <nav className="block w-full px-4 py-3 mx-auto bg-gradient-to-r from-purple-600 to-blue-600 shadow-md lg:px-8 lg:py-3">
+      <nav ref={root} className="block w-full px-4 py-3 mx-auto bg-gray-700 shadow-md lg:px-8 lg:py-3">
         <div className="container flex flex-wrap items-center justify-between text-slate-800">
-          <div className="flex shrink-0 items-center">
-            <PuzzlePieceIcon className="h-8 w-8 text-indigo-500" />
-            <span className="ml-2 font-['Press_Start_2P'] text-lg text-white">GameHub</span>
-          </div>
+            <div className="flex shrink-0 items-center logoWithTitle" onClick={handleClick}>
+            <img src="/original_logo.gif" alt="GameHub Logo" className="h-15 w-15" />
+            <span className="ml-2 mt-5 font-['Press_Start_2P'] text-xl text-white title">GameHub</span>
+            </div>
           <div className="flex-1 max-w-lg px-4">
             <div className="relative">
               <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
