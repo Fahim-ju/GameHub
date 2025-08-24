@@ -1,34 +1,27 @@
+import { createBrowserRouter, RouterProvider } from "react-router";
 import "./App.css";
 import { Navbar } from "./component/Navbar";
+import HomePage from "./pages/Home";
+import GamePage from "./pages/Game";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/game/:gameName",
+    element: <GamePage />,
+  },
+]);
 
 function App() {
   return (
     <div className="gamehub-home">
       <Navbar />
       <div className="gamehub-content">
-        <h1>GameHub</h1>
-        <h2 className="logo">Select a Game</h2>
-        <div className="game-list">
-          <GameCard name="Tic-Tac-Toe" description="Classic 3x3 grid game" />
-          <GameCard name="Sudoku" description="Fill the grid with numbers" />
-          {/* Add more games here */}
-        </div>
+        <RouterProvider router={router} />
       </div>
-    </div>
-  );
-}
-
-type GameCardProps = {
-  name: string;
-  description: string;
-};
-
-function GameCard({ name, description }: GameCardProps) {
-  return (
-    <div className="game-card">
-      <h3>{name}</h3>
-      <p>{description}</p>
-      <button disabled>Play</button>
     </div>
   );
 }
