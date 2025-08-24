@@ -2,9 +2,9 @@ import { AnimatePresence, motion } from "framer-motion";
 import Square from "../component/tictactoe/Square";
 import { useTicTacToe } from "../core/enum/hooks/tictactoe";
 import Button from "../component/tictactoe/Button";
-import type { GameSettings } from "../core/models/TicTacToeModels";
+import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
 
-function TicTacToe(gameSettings: GameSettings) {
+function TicTacToe(gameSettings: TicTacToeGameSettings) {
   console.log("Game settings:", gameSettings);
 
   const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, toggleAiMode, changeDifficulty } = useTicTacToe();
