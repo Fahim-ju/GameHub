@@ -1,6 +1,7 @@
 import React from "react";
 import { useParams } from "react-router";
 import { EnumGameId } from "../core/enum/EnumGameId";
+import Loading from "../component/common/Loading";
 
 const GamePage: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
@@ -8,7 +9,7 @@ const GamePage: React.FC = () => {
   if (gameName === EnumGameId.TicTacToe) {
     const TicTacToe = React.lazy(() => import("../games/TicTacToe"));
     return (
-      <React.Suspense fallback={<div>Loading...</div>}>
+      <React.Suspense fallback={<Loading />}>
         <div className="tictactoe-container">
           <TicTacToe />
         </div>
