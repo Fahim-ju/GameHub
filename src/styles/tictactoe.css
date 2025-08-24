@@ -1,3 +1,172 @@
+.tictactoe-initial-container {
+  max-width: 500px;
+  margin: 2rem auto;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+}
+
+.tictactoe-initial-container h2 {
+  text-align: center;
+  color: #eee;
+  margin-bottom: 2rem;
+}
+
+.tictactoe-settings-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-group label {
+  color: #eee;
+  font-size: 1.1rem;
+}
+
+.radio-group {
+  display: flex;
+  gap: 2rem;
+  margin: 0.5rem 0;
+}
+
+.radio-group label {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  cursor: pointer;
+  padding: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.radio-group label:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.radio-group input[type="radio"] {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.5rem;
+  height: 1.5rem;
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  border-radius: 50%;
+  background: rgba(124, 58, 237, 0.05);
+  position: relative;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.1);
+}
+
+.radio-group input[type="radio"]:checked {
+  border-color: #9333EA;
+  background: rgba(124, 58, 237, 0.1);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.3);
+}
+
+.radio-group input[type="radio"]:checked::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 0.75rem;
+  height: 0.75rem;
+  background: linear-gradient(135deg, #7C3AED 0%, #9333EA 100%);
+  border-radius: 50%;
+  animation: radioScale 0.2s ease;
+  box-shadow: 0 0 8px rgba(124, 58, 237, 0.4);
+}
+
+.radio-group input[type="radio"]:hover {
+  border-color: #9333EA;
+  background: rgba(124, 58, 237, 0.15);
+  box-shadow: 0 0 12px rgba(124, 58, 237, 0.25);
+}
+
+@keyframes radioScale {
+  0% {
+    transform: translate(-50%, -50%) scale(0);
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.form-group input[type="text"],
+.form-group select {
+  padding: 0.75rem;
+  border: 2px solid rgba(124, 58, 237, 0.3);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #eee;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-group select {
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, rgba(124, 58, 237, 0.8) 50%),
+                    linear-gradient(135deg, rgba(124, 58, 237, 0.8) 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(1em + 2px),
+                      calc(100% - 15px) calc(1em + 2px);
+  background-size: 5px 5px,
+                  5px 5px;
+  background-repeat: no-repeat;
+}
+
+.form-group select option {
+  background: #1E1B4B;
+  color: #eee;
+  padding: 1rem;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.form-group select option:hover,
+.form-group select option:focus {
+  background: #312E81;
+}
+
+.form-group input[type="text"]:hover,
+.form-group select:hover {
+  border-color: rgba(124, 58, 237, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.2);
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #7C3AED;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
+}
+
+.start-game-btn {
+  margin-top: 1rem;
+  padding: 1rem;
+  border: none;
+  border-radius: 8px;
+  background: #49ff58;
+  color: #222;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.start-game-btn:hover {
+  background: #3ae449;
+}
+
 .tictactoe-container {
   .tic-tac-toe h1 {
     color: #eee;

@@ -7,11 +7,11 @@ const GamePage: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
 
   if (gameName === EnumGameId.TicTacToe) {
-    const TicTacToe = React.lazy(() => import("../games/TicTacToe"));
+    const TicTacToeInitialPage = React.lazy(() => import("../games/TicTacToeInitialPage"));
     return (
       <React.Suspense fallback={<Loading />}>
         <div className="tictactoe-container">
-          <TicTacToe />
+          <TicTacToeInitialPage />
         </div>
       </React.Suspense>
     );
