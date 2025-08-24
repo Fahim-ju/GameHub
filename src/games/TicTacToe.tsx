@@ -3,9 +3,11 @@ import Square from "../component/tictactoe/Square";
 import { useTicTacToe } from "../core/enum/hooks/tictactoe";
 import Button from "../component/tictactoe/Button";
 import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
+import { useNavigate } from "react-router";
 
 function TicTacToe(gameSettings: TicTacToeGameSettings) {
   console.log("Game settings:", gameSettings);
+  const navigate = useNavigate();
 
   const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, changeDifficulty } = useTicTacToe(gameSettings);
   
@@ -118,8 +120,17 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
                     duration: 0.3,
                   },
                 }}
+                className="winner-buttons"
               >
                 <Button resetGame={resetGame} text="Play Again" />
+                <motion.button
+                  onClick={() => navigate('/')}
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                  className="home-btn"
+                >
+                  Go Home
+                </motion.button>
               </motion.div>
             </motion.div>
           </motion.div>
