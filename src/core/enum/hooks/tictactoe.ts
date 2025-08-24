@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import { checkEndTheGame, checkWinner } from "../../../utils/tictactoe/GameLogic";
-import { findBestMove } from "../../../utils/tictactoe/AiLogic";
+import { findBestMove, type Difficulty } from "../../../utils/tictactoe/AiLogic";
+import { GameMode, type DifficultyType } from "../TicTacToeEnums";
+import type { TicTacToeGameSettings } from "../../models/TicTacToeModels";
 
 type Player = "x" | "o";
 type Square = Player | "";
 type Winner = Player | "x | o" | null;
-type Difficulty = "easy" | "medium" | "hard";
 
 interface UseTicTacToeReturn {
   squares: Square[];
@@ -19,12 +20,12 @@ interface UseTicTacToeReturn {
   changeDifficulty: () => void;
 }
 
-export const useTicTacToe = (): UseTicTacToeReturn => {
+export const useTicTacToe = (settings: TicTacToeGameSettings): UseTicTacToeReturn => {
   const [squares, setSquares] = useState<Square[]>(Array(9).fill(""));
   const [turn, setTurn] = useState<Player>("x");
   const [winner, setWinner] = useState<Winner>(null);
-  const [isAiMode, setIsAiMode] = useState<boolean>(false);
-  const [difficulty, setDifficulty] = useState<Difficulty>("easy");
+  const [isAiMode, setIsAiMode] = useState<boolean>(settings.gameMode === GameMode.SINGLE);
+  const [difficulty, setDifficulty] = useState<DifficultyType>(settings.difficulty as Difficulty);
 
   const updateSquares = (ind: number): void => {
     if (squares[ind] || winner || (isAiMode && turn === "o")) {

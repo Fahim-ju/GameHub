@@ -7,7 +7,7 @@ import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
 function TicTacToe(gameSettings: TicTacToeGameSettings) {
   console.log("Game settings:", gameSettings);
 
-  const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, toggleAiMode, changeDifficulty } = useTicTacToe();
+  const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, changeDifficulty } = useTicTacToe(gameSettings);
   return (
     <div className="tic-tac-toe">
       <h1>
@@ -16,9 +16,6 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
       </h1>
       <div className="game-controls">
         <Button resetGame={resetGame} text="Reset Game" />
-        <button onClick={toggleAiMode} className="ai-toggle">
-          {isAiMode ? "Disable AI" : "Enable AI"}
-        </button>
         {isAiMode && (
           <button onClick={changeDifficulty} className="difficulty-toggle">
             {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
