@@ -1,16 +1,13 @@
-
 import "./App.css";
-import Navbar, { NavbarNew } from "./component/Navbar";
+import { Navbar } from "./component/Navbar";
 
 function App() {
-  
-
   return (
     <div className="gamehub-home">
-      <NavbarNew />
+      <Navbar />
       <div className="gamehub-content">
         <h1>GameHub</h1>
-        <h2 className="logo" >Select a Game</h2>
+        <h2 className="logo">Select a Game</h2>
         <div className="game-list">
           <GameCard name="Tic-Tac-Toe" description="Classic 3x3 grid game" />
           <GameCard name="Sudoku" description="Fill the grid with numbers" />
