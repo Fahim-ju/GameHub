@@ -219,7 +219,7 @@ export const NavbarNew = () => {
         <div className="container flex flex-wrap items-center justify-between text-slate-800">
             <div className="flex shrink-0 items-center logoWithTitle" onClick={handleClick}>
             <img src="/original_logo.gif" alt="GameHub Logo" className="h-15 w-15" />
-            <span className="ml-2 mt-5 font-['Press_Start_2P'] text-xl text-white title">GameHub</span>
+            <span className="ml-2 mt-5 font-['Orbitron_Variable'] text-xl text-white title">GameHub</span>
             </div>
           <div className="flex-1 max-w-lg px-4">
             <div className="relative">
