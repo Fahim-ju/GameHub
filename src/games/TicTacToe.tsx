@@ -49,27 +49,17 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
           >
             <Square clsName="x" />
           </motion.div>
-          <motion.div
-            className="player-name"
-            animate={{
-              color: turn === "x" ? "#ff0088" : "#aaa",
-              scale: turn === "x" ? 1.05 : 1,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            {gameSettings.player1Name}
-          </motion.div>
         </div>
         <motion.div
           className="turn-indicator"
           animate={{
-            x: turn === "x" ? "-90%" : "90%" /* Increased offset to position properly over each player */,
+            x: turn === "x" ? "-85%" : "85%" /* Adjusted offset to center over each player avatar */,
             backgroundColor: turn === "x" ? "#ff0088" : "#ffa02e",
             color: turn === "x" ? "#ff0088" : "#ffa02e" /* For the arrow pointer color */,
           }}
           initial={{
             x: 0,
-            y: -20,
+            y: 0,
           }}
           transition={{ type: "spring", stiffness: 300, damping: 20 }}
         >
@@ -83,9 +73,11 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
                 transition={{
                   repeat: Infinity,
                   duration: 2,
-                  times: [0, 0.2, 0.4, 0.6, 1]
+                  times: [0, 0.2, 0.4, 0.6, 1],
                 }}
-              >.</motion.span>
+              >
+                .
+              </motion.span>
               <motion.span
                 animate={{
                   opacity: [0, 0, 1, 1, 0],
@@ -93,9 +85,11 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
                 transition={{
                   repeat: Infinity,
                   duration: 2,
-                  times: [0, 0.2, 0.4, 0.6, 1]
+                  times: [0, 0.2, 0.4, 0.6, 1],
                 }}
-              >.</motion.span>
+              >
+                .
+              </motion.span>
               <motion.span
                 animate={{
                   opacity: [0, 0, 0, 1, 0],
@@ -103,9 +97,11 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
                 transition={{
                   repeat: Infinity,
                   duration: 2,
-                  times: [0, 0.2, 0.4, 0.6, 1]
+                  times: [0, 0.2, 0.4, 0.6, 1],
                 }}
-              >.</motion.span>
+              >
+                .
+              </motion.span>
             </span>
           </motion.span>
         </motion.div>
@@ -120,18 +116,35 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
           >
             <Square clsName="o" />
           </motion.div>
-          <motion.div
-            className="player-name"
-            animate={{
-              color: turn === "o" ? "#ffa02e" : "#aaa",
-              scale: turn === "o" ? 1.05 : 1,
-            }}
-            transition={{ type: "spring", stiffness: 300, damping: 15 }}
-          >
-            {isAiMode ? "Computer" : gameSettings.player2Name}
-          </motion.div>
         </div>
       </div>
+      <motion.div
+        style={{ color: turn === "o" ? "#ffa02e" : "#ff0088", fontWeight: "bold", fontFamily: "sans-serif" }}
+        initial={{
+          scale: 0.2,
+          opacity: 0
+        }}
+        animate={{
+          scale: 0.95,
+          opacity: 1,
+          boxShadow: turn === "o" ? "0 0 0px rgba(255, 160, 46, 0.6)" : "0 0 0px rgba(255, 160, 46, 0.6)",
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.5 }}
+        key={turn}
+      >
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={turn === "x" ? "player1" : "player2"}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {turn === "x" ? `${gameSettings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${gameSettings.player2Name}`}'s Turn`}
+          </motion.span>
+        </AnimatePresence>
+      </motion.div>
+      <div></div>
       <AnimatePresence>
         {winner && (
           <motion.div

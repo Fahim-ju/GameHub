@@ -3,7 +3,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin: 50px auto;
+  margin-top: 50px;
   position: relative;
   width: 100%;
   max-width: 500px;
@@ -35,7 +35,7 @@
   justify-content: center;
   background: rgba(255, 255, 255, 0.1);
   transition: all 0.3s ease;
-  margin-top: 15px; /* Added top margin to make space for the turn indicator */
+  margin-top: 25px; /* Increased top margin to make more space for the turn indicator */
 }
 
 .player-avatar .square {
@@ -60,9 +60,9 @@
 
 .turn-indicator {
   position: absolute;
-  top: 15px; /* Moved higher */
-  left: 36%;
-  transform: translateX(-70%); /* This will be overridden by the animation */
+  top: 20px; /* Moved even higher */
+  left: 35%;
+  transform: translateX(-50%); /* This will be overridden by the animation */
   background-color: #ff0088;
   color: white;
   font-weight: bold;
@@ -79,14 +79,14 @@
 .turn-indicator:after {
   content: "";
   position: absolute;
-  bottom: -5px;
+  bottom: -6px;
   left: 50%;
-  transform: translateX(-70%);
+  transform: translateX(-50%);
   width: 0;
   height: 0;
-  border-left: 6px solid transparent;
-  border-right: 6px solid transparent;
-  border-top: 6px solid; /* Will inherit the color from parent */
+  border-left: 7px solid transparent;
+  border-right: 7px solid transparent;
+  border-top: 7px solid; /* Will inherit the color from parent */
 }
 
 /* Animation for the active player */
