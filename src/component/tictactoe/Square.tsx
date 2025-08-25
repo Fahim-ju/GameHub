@@ -26,10 +26,33 @@ const Square: React.FC<SquareProps> = ({ ind, updateSquares, clsName }) => {
     if (ind === undefined) return;
     updateSquares?.(ind);
   };
+  
   return (
-    <motion.div className="square" onClick={handleClick}>
-      {clsName === "x" && <PathDrawingCross />}
-      {clsName === "o" && <PathDrawingCircle />}
+    <motion.div 
+      className="square" 
+      onClick={handleClick}
+      whileHover={ind !== undefined ? { scale: 0.95, backgroundColor: "rgba(255, 255, 255, 0.05)" } : {}}
+      whileTap={ind !== undefined ? { scale: 0.9 } : {}}
+      transition={{ duration: 0.2 }}
+    >
+      {clsName === "x" && (
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <PathDrawingCross />
+        </motion.div>
+      )}
+      {clsName === "o" && (
+        <motion.div
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 20 }}
+        >
+          <PathDrawingCircle />
+        </motion.div>
+      )}
     </motion.div>
   );
 };
