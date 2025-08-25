@@ -45,21 +45,27 @@ export const useTicTacToe = (settings: TicTacToeGameSettings): UseTicTacToeRetur
 
   useEffect(() => {
     if (isAiMode && turn === "o" && !winner) {
-      const bestMove = findBestMove([...squares], difficulty);
-      if (bestMove !== -1) {
-        const s = [...squares];
-        s[bestMove] = "o";
-        setSquares(s);
-        setTurn("x");
-        const W = checkWinner(s);
-        if (W && (W === "x" || W === "o")) {
-          setWinner(W);
-        } else if (checkEndTheGame(s)) {
-          setWinner("x | o");
+      // Add delay for a more natural feel to the computer's move
+      const timeoutId = setTimeout(() => {
+        const bestMove = findBestMove([...squares], difficulty);
+        if (bestMove !== -1) {
+          const s = [...squares];
+          s[bestMove] = "o";
+          setSquares(s);
+          setTurn("x");
+          const W = checkWinner(s);
+          if (W && (W === "x" || W === "o")) {
+            setWinner(W);
+          } else if (checkEndTheGame(s)) {
+            setWinner("x | o");
+          }
         }
-      }
+      }, 2200); // 800ms delay for a natural thinking time
+
+      // Clean up the timeout when component unmounts or dependencies change
+      return () => clearTimeout(timeoutId);
     }
-  }, [turn, isAiMode, winner, difficulty, squares, difficulty]);
+  }, [turn, isAiMode, winner, difficulty, squares]);
 
   const resetGame = (): void => {
     setSquares(Array(9).fill(""));
