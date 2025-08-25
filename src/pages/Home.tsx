@@ -2,8 +2,7 @@ import { useEffect, useRef } from "react";
 import GameCard from "../component/GameCard";
 import { EnumGameId } from "../core/enum/EnumGameId";
 import { motion } from "framer-motion";
-// @ts-expect-error - anime.js types have issues with default export
-import anime from "animejs";
+import { animate, stagger } from "animejs";
 
 function HomePage() {
   const heroRef = useRef<HTMLDivElement>(null);
@@ -11,13 +10,12 @@ function HomePage() {
   useEffect(() => {
     // Simple animation for the hero text
     if (heroRef.current) {
-      anime({
-        targets: heroRef.current.querySelectorAll('.animate-text'),
+      animate(heroRef.current.querySelectorAll(".animate-text"), {
         translateY: [20, 0],
         opacity: [0, 1],
-        delay: anime.stagger(100),
+        delay: stagger(100),
         duration: 800,
-        easing: 'easeOutQuad'
+        easing: "easeOutQuad",
       });
     }
   }, []);
@@ -27,14 +25,14 @@ function HomePage() {
     show: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.1
-      }
-    }
+        staggerChildren: 0.1,
+      },
+    },
   };
 
   const item = {
     hidden: { y: 20, opacity: 0 },
-    show: { y: 0, opacity: 1, transition: { duration: 0.5 } }
+    show: { y: 0, opacity: 1, transition: { duration: 0.5 } },
   };
 
   return (
@@ -43,9 +41,7 @@ function HomePage() {
         <h1 className="hero-title animate-text">
           <span className="text-gradient">GameHub</span>
         </h1>
-        <p className="hero-subtitle animate-text">
-          Your portal to an exciting collection of classic and modern games
-        </p>
+        <p className="hero-subtitle animate-text">Your portal to an exciting collection of classic and modern games</p>
         <div className="hero-decoration animate-text">
           <div className="glow-effect"></div>
         </div>
@@ -53,24 +49,19 @@ function HomePage() {
 
       <div className="games-section">
         <h2 className="section-title">Featured Games</h2>
-        <motion.div 
-          className="game-list"
-          variants={container}
-          initial="hidden"
-          animate="show"
-        >
+        <motion.div className="game-list" variants={container} initial="hidden" animate="show">
           <motion.div variants={item}>
-            <GameCard 
-              id={EnumGameId.TicTacToe} 
-              name="Tic-Tac-Toe" 
-              description="Challenge your strategic thinking with this classic 3x3 grid game" 
+            <GameCard
+              id={EnumGameId.TicTacToe}
+              name="Tic-Tac-Toe"
+              description="Challenge your strategic thinking with this classic 3x3 grid game"
             />
           </motion.div>
           <motion.div variants={item}>
-            <GameCard 
-              id={EnumGameId.Sudoku} 
-              name="Sudoku" 
-              description="Test your logical thinking with this number-placement puzzle game" 
+            <GameCard
+              id={EnumGameId.Sudoku}
+              name="Sudoku"
+              description="Test your logical thinking with this number-placement puzzle game"
             />
           </motion.div>
           {/* Add more games here */}
