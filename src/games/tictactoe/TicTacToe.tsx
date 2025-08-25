@@ -1,14 +1,14 @@
 import { AnimatePresence, motion } from "framer-motion";
-import Square from "../component/tictactoe/Square";
-import { useTicTacToe } from "../core/enum/hooks/tictactoe";
-import Button from "../component/tictactoe/Button";
-import GameMenuModal from "../component/tictactoe/GameMenuModal";
-import ViewSettingsModal from "../component/tictactoe/ViewSettingsModal";
-import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
+import Square from "../../component/tictactoe/Square";
+import { useTicTacToe } from "../../core/enum/hooks/tictactoe";
+import Button from "../../component/tictactoe/Button";
+import GameMenuModal from "../../component/tictactoe/GameMenuModal";
+import ViewSettingsModal from "../../component/tictactoe/ViewSettingsModal";
+import type { TicTacToeGameSettings } from "../../core/models/TicTacToeModels";
 import { useNavigate } from "react-router";
 import { useState } from "react";
-import "../styles/tictactoe-player-info.css";
-import "../styles/game-menu.css";
+import "./styles/tictactoe-player-info.css";
+import "./styles/game-menu.css";
 
 interface TicTacToeProps extends TicTacToeGameSettings {
   backToSettings: () => void;
