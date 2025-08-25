@@ -13,6 +13,36 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+/* Custom Scrollbar Styles */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+
+::-webkit-scrollbar-track {
+  background: rgba(26, 28, 46, 0.3);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 170, 0.5);
+  border-radius: 2px;
+  transition: background 0.2s ease;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(180, 180, 200, 0.7);
+}
+
+::-webkit-scrollbar-corner {
+  background: transparent;
+}
+
+/* Hide scrollbar arrows/buttons */
+::-webkit-scrollbar-button {
+  display: none;
+}
+
 a {
   font-weight: 500;
   color: #646cff;
@@ -51,4 +81,23 @@ h1 {
   button {
     background-color: #f9f9f9;
   }
+  
+  /* Light mode scrollbar */
+  ::-webkit-scrollbar-track {
+    background: rgba(240, 240, 245, 0.2);
+  }
+  
+  ::-webkit-scrollbar-thumb {
+    background: rgba(100, 100, 120, 0.4);
+  }
+  
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(120, 120, 140, 0.6);
+  }
+}
+
+/* Firefox scrollbar */
+* {
+  scrollbar-width: thin; /* Firefox only supports "thin" and "auto" */
+  scrollbar-color: rgba(150, 150, 170, 0.5) rgba(26, 28, 46, 0.3);
 }
