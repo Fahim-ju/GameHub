@@ -178,11 +178,12 @@
     background: transparent;
     border: 2px solid #eee;
     color: #eee;
-    width: 100px;
+    width: 135px;
     border-radius: 5px;
     transition: 0.2s;
     font-weight: bold;
     cursor: pointer;
+    position: relative;
   }
 
   .tic-tac-toe button:hover {

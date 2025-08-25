@@ -33,7 +33,7 @@ const TicTacToeInitialPage = () => {
   }
 
   if (redirectToGame) {
-    return <TicTacToe {...settings} />;
+    return <TicTacToe {...settings} backToSettings={() => setRedirectToGame(false)} />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {

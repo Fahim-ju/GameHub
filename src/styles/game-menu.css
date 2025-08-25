@@ -1,0 +1,54 @@
+.game-menu-btn {
+  display: block;
+  width: 100%;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+  text-align: center;
+  position: relative;
+}
+
+.game-menu-btn:hover {
+  background: linear-gradient(135deg, rgba(124, 58, 237, 1) 0%, rgba(147, 51, 234, 1) 100%);
+  box-shadow: 0 6px 20px rgba(124, 58, 237, 0.4);
+}
+
+.game-menu-btn.quit-btn {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 0.8) 0%, rgba(248, 113, 113, 0.8) 100%);
+  box-shadow: 0 4px 15px rgba(220, 38, 38, 0.3);
+}
+
+.game-menu-btn.quit-btn:hover {
+  background: linear-gradient(135deg, rgba(220, 38, 38, 1) 0%, rgba(248, 113, 113, 1) 100%);
+  box-shadow: 0 6px 20px rgba(220, 38, 38, 0.4);
+}
+
+.game-menu-modal {
+  background: rgba(31, 41, 55, 0.95) !important;
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.menu-button {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(124, 58, 237, 0.3);
+  z-index: 5;
+}

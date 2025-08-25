@@ -2,15 +2,32 @@ import { AnimatePresence, motion } from "framer-motion";
 import Square from "../component/tictactoe/Square";
 import { useTicTacToe } from "../core/enum/hooks/tictactoe";
 import Button from "../component/tictactoe/Button";
+import GameMenuModal from "../component/tictactoe/GameMenuModal";
 import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
 import { useNavigate } from "react-router";
+import { useState } from "react";
 import "../styles/tictactoe-player-info.css";
+import "../styles/game-menu.css";
 
-function TicTacToe(gameSettings: TicTacToeGameSettings) {
+interface TicTacToeProps extends TicTacToeGameSettings {
+  backToSettings: () => void;
+}
+
+function TicTacToe(props: TicTacToeProps) {
+  const { ...gameSettings } = props;
   console.log("Game settings:", gameSettings);
   const navigate = useNavigate();
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const { squares, turn, winner, isAiMode, difficulty, updateSquares, resetGame, changeDifficulty } = useTicTacToe(gameSettings);
+  const { squares, turn, winner, isAiMode, updateSquares, resetGame } = useTicTacToe(gameSettings);
+
+  const openMenu = () => {
+    setIsMenuOpen(true);
+  };
+
+  const closeMenu = () => {
+    setIsMenuOpen(false);
+  };
 
   const getWinnerName = () => {
     if (winner === "x | o") return "It's a Tie!";
@@ -21,39 +38,13 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
   return (
     <div className="tic-tac-toe">
       <div className="game-controls">
-        <Button resetGame={resetGame} text="Reset Game" />
-        {isAiMode && (
-          <button onClick={changeDifficulty} className="difficulty-toggle">
-            {difficulty.charAt(0).toUpperCase() + difficulty.slice(1)}
-          </button>
-        )}
+        <motion.button className="menu-button" onClick={openMenu} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
+          Game Menu
+        </motion.button>
+
+        <GameMenuModal isOpen={isMenuOpen} closeModal={closeMenu} resetGame={resetGame} backToSettings={props.backToSettings} />
       </div>
-      <motion.div
-        style={{ color: turn === "o" ? "#ffa02e" : "#ff0088", fontWeight: "bold", fontFamily: "sans-serif" }}
-        initial={{
-          scale: 0.2,
-          opacity: 0,
-        }}
-        animate={{
-          scale: 0.95,
-          opacity: 1,
-          boxShadow: turn === "o" ? "0 0 0px rgba(255, 160, 46, 0.6)" : "0 0 0px rgba(255, 160, 46, 0.6)",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.5 }}
-        key={turn}
-      >
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={turn === "x" ? "player1" : "player2"}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {turn === "x" ? `${gameSettings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${gameSettings.player2Name}`}'s Turn`}
-          </motion.span>
-        </AnimatePresence>
-      </motion.div>
+
       <div className="player-info">
         <div className={`player ${turn === "x" ? "active" : ""}`}>
           <motion.div
@@ -135,6 +126,32 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
           </motion.div>
         </div>
       </div>
+      <motion.div
+        style={{ color: turn === "o" ? "#ffa02e" : "#ff0088", fontWeight: "bold", fontFamily: "sans-serif", marginBottom: "20px" }}
+        initial={{
+          scale: 0.2,
+          opacity: 0,
+        }}
+        animate={{
+          scale: 0.95,
+          opacity: 1,
+          boxShadow: turn === "o" ? "0 0 0px rgba(255, 160, 46, 0.6)" : "0 0 0px rgba(255, 160, 46, 0.6)",
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.5 }}
+        key={turn}
+      >
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={turn === "x" ? "player1" : "player2"}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {turn === "x" ? `${gameSettings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${gameSettings.player2Name}`}'s Turn`}
+          </motion.span>
+        </AnimatePresence>
+      </motion.div>
 
       <div className="game">
         {Array.from("012345678").map((ind) => (
@@ -226,7 +243,7 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
               >
                 <Button resetGame={resetGame} text="Play Again" />
                 <motion.button onClick={() => navigate("/")} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} className="home-btn">
-                  Go Home
+                  Quit Game
                 </motion.button>
               </motion.div>
             </motion.div>
