@@ -3,11 +3,9 @@ import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { createScope, animate, Scope, stagger, text } from "animejs";
 import { useRef, useState, useEffect } from "react";
 
-
 export const Navbar = () => {
   const root = useRef(null);
   const scope = useRef<Scope>(null);
-  const [rotations, setRotations] = useState(0);
 
   useEffect(() => {
     scope.current = createScope({ root }).add((self) => {
@@ -63,19 +61,17 @@ export const Navbar = () => {
   }, []);
 
   const handleClick = () => {
-    setRotations((prev) => {
-      const newRotations = prev + 1;
-      // Animate logo rotation on click using the method declared inside the scope
-      scope.current?.methods.rotateLogo(newRotations);
-      return newRotations;
-    });
+    window.location.href = "/";
   };
 
   return (
     <>
-      <nav ref={root} className="block w-full px-10 py-3 mx-auto bg-gradient-to-r from-gray-800 via-gray-300 to-gray-600 shadow-md lg:px-10 lg:py-3">
+      <nav
+        ref={root}
+        className="block w-full px-10 py-3 mx-auto bg-gradient-to-r from-gray-800 via-gray-300 to-gray-600 shadow-md lg:px-10 lg:py-3"
+      >
         <div className="flex flex-wrap items-center justify-between text-slate-800">
-          <div className="flex shrink-0 items-center logoWithTitle" onClick={handleClick}>
+          <div className="flex shrink-0 items-center logoWithTitle" onClick={handleClick} style={{ cursor: "pointer" }}>
             <img src="/original_logo.gif" alt="GameHub Logo" className="h-15 w-15" />
             <span className="ml-2 mt-5 font-['Orbitron_Variable'] text-xl text-white title">GameHub</span>
           </div>
