@@ -1,10 +1,10 @@
 import { motion } from "framer-motion";
-import "../styles/tictactoe.css";
-import { GameMode, Difficulty } from "../core/enum/TicTacToeEnums";
-import type { GameModeType, DifficultyType } from "../core/enum/TicTacToeEnums";
+import "./styles/tictactoe.css";
+import { GameMode, Difficulty } from "../../core/enum/TicTacToeEnums";
+import type { GameModeType, DifficultyType } from "../../core/enum/TicTacToeEnums";
 import TicTacToe from "./TicTacToe";
-import Loading from "../component/common/Loading";
-import { useTicTacToe } from "../core/enum/hooks/tictactoe";
+import Loading from "../../component/common/Loading";
+import { useTicTacToe } from "../../core/enum/hooks/tictactoe";
 
 const TicTacToeInitialPage = () => {
   const {
