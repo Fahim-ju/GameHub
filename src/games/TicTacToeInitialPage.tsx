@@ -1,32 +1,20 @@
-import { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import "../styles/tictactoe.css";
 import { GameMode, Difficulty } from "../core/enum/TicTacToeEnums";
 import type { GameModeType, DifficultyType } from "../core/enum/TicTacToeEnums";
-import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
 import TicTacToe from "./TicTacToe";
 import Loading from "../component/common/Loading";
+import { useTicTacToe } from "../core/enum/hooks/tictactoe";
 
 const TicTacToeInitialPage = () => {
-  const [settings, setSettings] = useState<TicTacToeGameSettings>({
-    gameMode: GameMode.SINGLE,
-    player1Name: "",
-    player2Name: "Computer",
-    difficulty: Difficulty.MEDIUM,
-  });
-
-  const [redirectToGame, setRedirectToGame] = useState(false);
-  const [gameStarted, setGameStarted] = useState(false);
-
-  useEffect(() => {
-    if (gameStarted) {
-      const timer = setTimeout(() => {
-        setGameStarted(false);
-        setRedirectToGame(true);
-      }, 3000);
-      return () => clearTimeout(timer);
-    }
-  }, [gameStarted]);
+  const {
+    settings,
+    gameStarted,
+    redirectToGame,
+    updateSettings,
+    startGame,
+    setRedirectToGame
+  } = useTicTacToe();
 
   if (gameStarted) {
     return <Loading />;
@@ -38,7 +26,7 @@ const TicTacToeInitialPage = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    setGameStarted(true);
+    startGame();
   };
 
   return (
@@ -54,10 +42,8 @@ const TicTacToeInitialPage = () => {
                 value={GameMode.SINGLE}
                 checked={settings.gameMode === GameMode.SINGLE}
                 onChange={(e) =>
-                  setSettings({
-                    ...settings,
+                  updateSettings({
                     gameMode: e.target.value as GameModeType,
-                    player2Name: e.target.value === GameMode.SINGLE ? "Computer" : "",
                   })
                 }
               />
@@ -69,10 +55,8 @@ const TicTacToeInitialPage = () => {
                 value={GameMode.DOUBLE}
                 checked={settings.gameMode === GameMode.DOUBLE}
                 onChange={(e) =>
-                  setSettings({
-                    ...settings,
+                  updateSettings({
                     gameMode: e.target.value as GameModeType,
-                    player2Name: e.target.value === GameMode.SINGLE ? "Computer" : "",
                   })
                 }
               />
@@ -87,7 +71,7 @@ const TicTacToeInitialPage = () => {
             type="text"
             id="player1"
             value={settings.player1Name}
-            onChange={(e) => setSettings({ ...settings, player1Name: e.target.value })}
+            onChange={(e) => updateSettings({ player1Name: e.target.value })}
             required
             placeholder="Enter Player 1 name"
           />
@@ -100,7 +84,7 @@ const TicTacToeInitialPage = () => {
               type="text"
               id="player2"
               value={settings.player2Name}
-              onChange={(e) => setSettings({ ...settings, player2Name: e.target.value })}
+              onChange={(e) => updateSettings({ player2Name: e.target.value })}
               required
               placeholder="Enter Player 2 name"
             />
@@ -113,8 +97,7 @@ const TicTacToeInitialPage = () => {
             <select
               value={settings.difficulty}
               onChange={(e) =>
-                setSettings({
-                  ...settings,
+                updateSettings({
                   difficulty: e.target.value as DifficultyType,
                 })
               }

@@ -21,7 +21,7 @@ function TicTacToe(props: TicTacToeProps) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
-  const { squares, turn, winner, isAiMode, updateSquares, resetGame } = useTicTacToe(gameSettings);
+  const { squares, turn, winner, isAiMode, updateSquares, resetGame, settings } = useTicTacToe(gameSettings);
 
   const openMenu = () => {
     setIsMenuOpen(true);
@@ -41,8 +41,8 @@ function TicTacToe(props: TicTacToeProps) {
 
   const getWinnerName = () => {
     if (winner === "x | o") return "It's a Tie!";
-    if (winner === "x") return `${gameSettings.player1Name} Wins!`;
-    return isAiMode ? "Computer Wins!" : `${gameSettings.player2Name} Wins!`;
+    if (winner === "x") return `${settings.player1Name} Wins!`;
+    return isAiMode ? "Computer Wins!" : `${settings.player2Name} Wins!`;
   };
 
   return (
@@ -60,7 +60,7 @@ function TicTacToe(props: TicTacToeProps) {
         >
           View Settings
         </motion.button>
-        <ViewSettingsModal isOpen={isSettingsModalOpen} closeModal={closeSettingsModal} settings={gameSettings} />
+        <ViewSettingsModal isOpen={isSettingsModalOpen} closeModal={closeSettingsModal} settings={settings} />
       </div>
 
       <div className="player-info">
@@ -166,7 +166,7 @@ function TicTacToe(props: TicTacToeProps) {
             exit={{ opacity: 0, y: 20 }}
             transition={{ duration: 0.3 }}
           >
-            {turn === "x" ? `${gameSettings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${gameSettings.player2Name}`}'s Turn`}
+            {turn === "x" ? `${settings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${settings.player2Name}`}'s Turn`}
           </motion.span>
         </AnimatePresence>
       </motion.div>
