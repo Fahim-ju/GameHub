@@ -3,6 +3,7 @@ import Square from "../component/tictactoe/Square";
 import { useTicTacToe } from "../core/enum/hooks/tictactoe";
 import Button from "../component/tictactoe/Button";
 import GameMenuModal from "../component/tictactoe/GameMenuModal";
+import ViewSettingsModal from "../component/tictactoe/ViewSettingsModal";
 import type { TicTacToeGameSettings } from "../core/models/TicTacToeModels";
 import { useNavigate } from "react-router";
 import { useState } from "react";
@@ -18,6 +19,7 @@ function TicTacToe(props: TicTacToeProps) {
   console.log("Game settings:", gameSettings);
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
 
   const { squares, turn, winner, isAiMode, updateSquares, resetGame } = useTicTacToe(gameSettings);
 
@@ -27,6 +29,14 @@ function TicTacToe(props: TicTacToeProps) {
 
   const closeMenu = () => {
     setIsMenuOpen(false);
+  };
+  
+  const openSettingsModal = () => {
+    setIsSettingsModalOpen(true);
+  };
+
+  const closeSettingsModal = () => {
+    setIsSettingsModalOpen(false);
   };
 
   const getWinnerName = () => {
@@ -41,8 +51,16 @@ function TicTacToe(props: TicTacToeProps) {
         <motion.button className="menu-button" onClick={openMenu} whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
           Game Menu
         </motion.button>
-
         <GameMenuModal isOpen={isMenuOpen} closeModal={closeMenu} resetGame={resetGame} backToSettings={props.backToSettings} />
+        <motion.button 
+          className="menu-button"
+          onClick={openSettingsModal} 
+          whileHover={{ scale: 1.05 }} 
+          whileTap={{ scale: 0.95 }}
+        >
+          View Settings
+        </motion.button>
+        <ViewSettingsModal isOpen={isSettingsModalOpen} closeModal={closeSettingsModal} settings={gameSettings} />
       </div>
 
       <div className="player-info">
