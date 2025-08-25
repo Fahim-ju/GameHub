@@ -1,15 +1,21 @@
 import React from "react";
 import { useParams } from "react-router";
+import { EnumGameId } from "../core/enum/EnumGameId";
+import Loading from "../component/common/Loading";
 
 const GamePage: React.FC = () => {
   const { gameName } = useParams<{ gameName: string }>();
 
-  return (
-    <div className="game-page">
-      <h1>Welcome to {gameName}!</h1>
-      <p>Enjoy playing {gameName}.</p>
-    </div>
-  );
+  if (gameName === EnumGameId.TicTacToe) {
+    const TicTacToeInitialPage = React.lazy(() => import("../games/TicTacToeInitialPage"));
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <div className="tictactoe-container">
+          <TicTacToeInitialPage />
+        </div>
+      </React.Suspense>
+    );
+  }
 };
 
 export default GamePage;
