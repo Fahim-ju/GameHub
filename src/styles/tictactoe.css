@@ -2,15 +2,36 @@
   max-width: 500px;
   margin: 2rem auto;
   padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(124, 58, 237, 0.6);
   border-radius: 15px;
   backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(124, 58, 237, 0.5), inset 0 0 20px rgba(124, 58, 237, 0.2);
+  animation: borderGlow 4s infinite ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes textGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(124, 58, 237, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(124, 58, 237, 0.3);
+  }
 }
 
 .tictactoe-initial-container h2 {
   text-align: center;
   color: #eee;
   margin-bottom: 2rem;
+  text-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+  animation: textGlow 4s infinite ease-in-out;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
 }
 
 .tictactoe-settings-form {
@@ -102,7 +123,8 @@
 .form-group input[type="text"],
 .form-group select {
   padding: 0.75rem;
-  border: 2px solid rgba(124, 58, 237, 0.3);
+  border: 2px solid rgba(124, 58, 237, 0.4);
+  background: rgba(0, 0, 0, 0.2);
   border-radius: 8px;
   background: rgba(255, 255, 255, 0.1);
   color: #eee;
@@ -150,21 +172,39 @@
   box-shadow: 0 0 20px rgba(124, 58, 237, 0.3);
 }
 
+@keyframes buttonGlow {
+  0% {
+    background: rgba(124, 58, 237, 0.8);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.6);
+  }
+  50% {
+    background: rgba(139, 92, 246, 0.9);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.7);
+  }
+  100% {
+    background: rgba(124, 58, 237, 0.8);
+    box-shadow: 0 0 10px rgba(124, 58, 237, 0.6);
+  }
+}
+
 .start-game-btn {
   margin-top: 1rem;
   padding: 1rem;
   border: none;
   border-radius: 8px;
-  background: #49ff58;
-  color: #222;
+  background: linear-gradient(135deg, rgba(124, 58, 237, 0.8) 0%, rgba(147, 51, 234, 0.8) 100%);
+  color: white;
   font-size: 1.1rem;
   font-weight: bold;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(124, 58, 237, 0.5);
+  animation: buttonGlow 3s infinite ease-in-out;
 }
 
 .start-game-btn:hover {
-  background: #3ae449;
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.9) 0%, rgba(168, 85, 247, 0.9) 100%);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.8);
 }
 
 @keyframes borderGlow {
