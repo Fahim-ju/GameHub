@@ -20,10 +20,6 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
 
   return (
     <div className="tic-tac-toe">
-      <h1>
-        TIC-TAC-TOE
-        {isAiMode ? ` (AI Mode - ${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} Level)` : ""}
-      </h1>
       <div className="game-controls">
         <Button resetGame={resetGame} text="Reset Game" />
         {isAiMode && (
@@ -32,11 +28,32 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
           </button>
         )}
       </div>
-      <div className="game">
-        {Array.from("012345678").map((ind) => (
-          <Square key={ind} ind={Number(ind)} updateSquares={updateSquares} clsName={squares[Number(ind)]} />
-        ))}
-      </div>
+      <motion.div
+        style={{ color: turn === "o" ? "#ffa02e" : "#ff0088", fontWeight: "bold", fontFamily: "sans-serif" }}
+        initial={{
+          scale: 0.2,
+          opacity: 0,
+        }}
+        animate={{
+          scale: 0.95,
+          opacity: 1,
+          boxShadow: turn === "o" ? "0 0 0px rgba(255, 160, 46, 0.6)" : "0 0 0px rgba(255, 160, 46, 0.6)",
+        }}
+        transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.5 }}
+        key={turn}
+      >
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={turn === "x" ? "player1" : "player2"}
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: 20 }}
+            transition={{ duration: 0.3 }}
+          >
+            {turn === "x" ? `${gameSettings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${gameSettings.player2Name}`}'s Turn`}
+          </motion.span>
+        </AnimatePresence>
+      </motion.div>
       <div className="player-info">
         <div className={`player ${turn === "x" ? "active" : ""}`}>
           <motion.div
@@ -118,33 +135,13 @@ function TicTacToe(gameSettings: TicTacToeGameSettings) {
           </motion.div>
         </div>
       </div>
-      <motion.div
-        style={{ color: turn === "o" ? "#ffa02e" : "#ff0088", fontWeight: "bold", fontFamily: "sans-serif" }}
-        initial={{
-          scale: 0.2,
-          opacity: 0
-        }}
-        animate={{
-          scale: 0.95,
-          opacity: 1,
-          boxShadow: turn === "o" ? "0 0 0px rgba(255, 160, 46, 0.6)" : "0 0 0px rgba(255, 160, 46, 0.6)",
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 15, delay: 0.5 }}
-        key={turn}
-      >
-        <AnimatePresence mode="wait">
-          <motion.span
-            key={turn === "x" ? "player1" : "player2"}
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 20 }}
-            transition={{ duration: 0.3 }}
-          >
-            {turn === "x" ? `${gameSettings.player1Name}'s Turn` : `${isAiMode ? "Computer" : `${gameSettings.player2Name}`}'s Turn`}
-          </motion.span>
-        </AnimatePresence>
-      </motion.div>
-      <div></div>
+
+      <div className="game">
+        {Array.from("012345678").map((ind) => (
+          <Square key={ind} ind={Number(ind)} updateSquares={updateSquares} clsName={squares[Number(ind)]} />
+        ))}
+      </div>
+
       <AnimatePresence>
         {winner && (
           <motion.div
