@@ -1,20 +1,13 @@
 import { motion } from "framer-motion";
 import "./styles/carracing.css";
 import { GameMode, Difficulty, VehicleType } from "../../core/enum/CarRacingEnums";
-import type { GameModeType, DifficultyType, VehicleTypeType } from "../../core/enum/CarRacingEnums";
+import type { GameModeType, DifficultyType } from "../../core/enum/CarRacingEnums";
 import CarRacing from "./CarRacing";
 import Loading from "../../component/common/Loading";
 import { useCarRacing } from "../../core/enum/hooks/carracing";
 
 const CarRacingInitialPage = () => {
-  const {
-    settings,
-    gameStarted,
-    redirectToGame,
-    updateSettings,
-    startGame,
-    setRedirectToGame
-  } = useCarRacing();
+  const { settings, gameStarted, redirectToGame, updateSettings, startGame, setRedirectToGame } = useCarRacing();
 
   if (gameStarted) {
     return <Loading />;
@@ -64,7 +57,7 @@ const CarRacingInitialPage = () => {
           />
         </div>
 
-  {/* Two-player removed: always single player */}
+        {/* Two-player removed: always single player */}
 
         {settings.gameMode === GameMode.SINGLE && (
           <div className="form-group">
@@ -87,7 +80,7 @@ const CarRacingInitialPage = () => {
         <div className="form-group">
           <label>Vehicle Type:</label>
           <div className="vehicle-options">
-            <motion.div 
+            <motion.div
               className={`vehicle-option ${settings.vehicleType === VehicleType.SPORT ? "selected" : ""}`}
               onClick={() => updateSettings({ vehicleType: VehicleType.SPORT })}
               whileHover={{ scale: 1.03 }}
@@ -97,7 +90,7 @@ const CarRacingInitialPage = () => {
               <p>Sport Car</p>
               <small>Fast & Agile</small>
             </motion.div>
-            <motion.div 
+            <motion.div
               className={`vehicle-option ${settings.vehicleType === VehicleType.SUV ? "selected" : ""}`}
               onClick={() => updateSettings({ vehicleType: VehicleType.SUV })}
               whileHover={{ scale: 1.03 }}
@@ -107,7 +100,7 @@ const CarRacingInitialPage = () => {
               <p>SUV</p>
               <small>Balanced Performance</small>
             </motion.div>
-            <motion.div 
+            <motion.div
               className={`vehicle-option ${settings.vehicleType === VehicleType.TRUCK ? "selected" : ""}`}
               onClick={() => updateSettings({ vehicleType: VehicleType.TRUCK })}
               whileHover={{ scale: 1.03 }}

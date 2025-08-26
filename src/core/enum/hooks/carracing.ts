@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Difficulty, GameMode, VehicleType } from "../CarRacingEnums";
-import type { GameModeType, DifficultyType, VehicleTypeType } from "../CarRacingEnums";
 import type { CarRacingSettings } from "../../models/CarRacingModels";
 
 export const useCarRacing = () => {

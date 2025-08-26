@@ -29,7 +29,6 @@ const OBSTACLE_WIDTH = 40;
 const OBSTACLE_HEIGHT = 40;
 const ROAD_PADDING = 20;
 const POWER_UP_SIZE = 30;
-const LANE_STEP = 0.04; // smaller step for less sensitive lane changes
 
 const CarRacing: FC<CarRacingProps> = ({
   gameMode,
@@ -164,21 +163,22 @@ const CarRacing: FC<CarRacingProps> = ({
     const keys = gameStateRef.current.keysPressed;
 
     // Player 1 controls (Arrow keys)
-    // Handle exclusive left/right input to avoid opposite keys cancelling out
-    const left = keys.has('ArrowLeft');
-    const right = keys.has('ArrowRight');
-
-    if (left && !right) {
+    if (keys.has('ArrowLeft')) {
       if (gameStateRef.current.player1.lane > 0) {
-        gameStateRef.current.player1.lane = Math.max(0, gameStateRef.current.player1.lane - LANE_STEP);
+  // Reduce sensitivity: smaller lane change per frame
+  const LANE_CHANGE = 0.04;
+  gameStateRef.current.player1.lane = Math.max(0, gameStateRef.current.player1.lane - LANE_CHANGE);
         gameStateRef.current.player1.x = ROAD_PADDING +
           gameStateRef.current.player1.lane * laneWidth +
           (laneWidth - CAR_WIDTH) / 2;
       }
-    } else if (right && !left) {
+    }
+    if (keys.has('ArrowRight')) {
       const maxLane = 2;
       if (gameStateRef.current.player1.lane < maxLane) {
-        gameStateRef.current.player1.lane = Math.min(maxLane, gameStateRef.current.player1.lane + LANE_STEP);
+  // Reduce sensitivity: smaller lane change per frame
+  const LANE_CHANGE = 0.04;
+  gameStateRef.current.player1.lane = Math.min(maxLane, gameStateRef.current.player1.lane + LANE_CHANGE);
         gameStateRef.current.player1.x = ROAD_PADDING +
           gameStateRef.current.player1.lane * laneWidth +
           (laneWidth - CAR_WIDTH) / 2;
