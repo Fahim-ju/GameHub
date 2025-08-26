@@ -49,19 +49,6 @@ const CarRacingInitialPage = () => {
               />
               Single Player
             </label>
-            <label>
-              <input
-                type="radio"
-                value={GameMode.DOUBLE}
-                checked={settings.gameMode === GameMode.DOUBLE}
-                onChange={(e) =>
-                  updateSettings({
-                    gameMode: e.target.value as GameModeType,
-                  })
-                }
-              />
-              Two Players
-            </label>
           </div>
         </div>
 
@@ -77,19 +64,7 @@ const CarRacingInitialPage = () => {
           />
         </div>
 
-        {settings.gameMode === GameMode.DOUBLE && (
-          <div className="form-group">
-            <label htmlFor="player2">Player 2 Name:</label>
-            <input
-              type="text"
-              id="player2"
-              value={settings.player2Name}
-              onChange={(e) => updateSettings({ player2Name: e.target.value })}
-              required
-              placeholder="Enter Player 2 name"
-            />
-          </div>
-        )}
+  {/* Two-player removed: always single player */}
 
         {settings.gameMode === GameMode.SINGLE && (
           <div className="form-group">

@@ -98,6 +98,175 @@
   color: #f0f0f0;
 }
 
+/* Car Racing Game Styles */
+.carracing-game-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1.5rem;
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  text-align: center;
+}
+
+.carracing-game-container h1 {
+  margin-bottom: 1rem;
+  color: #fff;
+  font-size: 2rem;
+}
+
+.game-controls {
+  margin-bottom: 1rem;
+  display: flex;
+  justify-content: space-between;
+}
+
+.control-btn {
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  border: none;
+  background-color: #555;
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.control-btn:hover {
+  background-color: #777;
+  transform: translateY(-2px);
+}
+
+.restart-btn {
+  background-color: #4caf50;
+}
+
+.restart-btn:hover {
+  background-color: #66bb6a;
+}
+
+.game-area {
+  position: relative;
+  width: 100%;
+  height: 500px;
+  margin-bottom: 1.5rem;
+}
+
+.racing-canvas {
+  background-color: #333;
+  display: block;
+  margin: 0 auto;
+  border-radius: 8px;
+}
+
+.countdown-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.countdown {
+  font-size: 6rem;
+  font-weight: 700;
+  color: #fff;
+  animation: pulse 1s infinite;
+}
+
+.game-over-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.8);
+  z-index: 10;
+  border-radius: 8px;
+}
+
+.game-over-overlay h2 {
+  color: #ff3d00;
+  font-size: 3rem;
+  margin-bottom: 1rem;
+}
+
+.game-over-overlay p {
+  color: #fff;
+  font-size: 1.5rem;
+}
+
+.instructions-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(0, 0, 0, 0.6);
+  z-index: 10;
+  border-radius: 8px;
+  color: white;
+}
+
+.instructions-overlay h3 {
+  margin-bottom: 0.5rem;
+  font-size: 1.5rem;
+}
+
+.instructions-overlay p {
+  margin: 0.25rem 0;
+  font-size: 1.1rem;
+}
+
+.game-info {
+  display: flex;
+  justify-content: space-around;
+  margin-top: 1rem;
+}
+
+.player-info {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.player-name {
+  font-weight: 600;
+  color: #fff;
+}
+
+.power-up-indicator {
+  font-size: 1.2rem;
+}
+
+.power-up-indicator.shield {
+  color: #00FFFF;
+}
+
+.power-up-indicator.speed {
+  color: #FFFF00;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); opacity: 1; }
+  50% { transform: scale(1.1); opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
 .vehicle-option small {
   display: block;
   font-size: 0.8rem;
