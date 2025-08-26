@@ -3,6 +3,7 @@ import "./App.css";
 import { Navbar } from "./component/Navbar";
 import HomePage from "./pages/Home";
 import GamePage from "./pages/Game";
+import NotFound from "./pages/NotFound";
 
 const router = createBrowserRouter([
   {
@@ -12,6 +13,10 @@ const router = createBrowserRouter([
   {
     path: "/game/:gameName",
     element: <GamePage />,
+  },
+  {
+    path: "*",
+    element: <NotFound />,
   },
 ]);
 

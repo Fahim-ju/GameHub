@@ -1,14 +1,14 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { createScope, animate, Scope, stagger, text } from "animejs";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
 
 export const Navbar = () => {
   const root = useRef(null);
   const scope = useRef<Scope>(null);
 
   useEffect(() => {
-    scope.current = createScope({ root }).add((self) => {
+    scope.current = createScope({ root }).add(() => {
       // Every anime.js instances declared here are now scopped to <div ref={root}>
 
       // Created a bounce animation loop
