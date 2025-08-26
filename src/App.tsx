@@ -18,7 +18,9 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
-]);
+], {
+  basename: '/GameHub'
+});
 
 function App() {
   return (

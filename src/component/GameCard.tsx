@@ -21,11 +21,11 @@ function GameCard({ id, name, description }: GameCardProps) {
     if (gameId === EnumGameId.TicTacToe) {
       return isHovered ? 
         { 
-          backgroundImage: `url('/TicTacToePlaying.gif')`,
+          backgroundImage: `url('/GameHub/TicTacToePlaying.gif')`,
           backgroundColor: 'transparent' // Ensure no background color is interfering
         } : 
         { 
-          backgroundImage: `url('/tictactoestill.png')`, 
+          backgroundImage: `url('/GameHub/tictactoestill.png')`, 
           backgroundColor: 'transparent' // Ensure no background color is interfering
         };
     }
