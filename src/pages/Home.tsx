@@ -67,9 +67,9 @@ function HomePage() {
           {/* Add more games here */}
           <motion.div variants={item}>
             <GameCard
-              id={EnumGameId.TicTacToe}
-              name="Tic-Tac-Toe"
-              description="Challenge your strategic thinking with this classic 3x3 grid game"
+              id={EnumGameId.CarRacing}
+              name="Car Racing"
+              description="Experience the thrill of high-speed racing in this adrenaline-pumping game"
             />
           </motion.div>
           <motion.div variants={item}>

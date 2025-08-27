@@ -15,6 +15,15 @@ const GamePage: React.FC = () => {
         </div>
       </React.Suspense>
     );
+  } else if(gameName === EnumGameId.CarRacing){
+    const CarRacingInitialPage = React.lazy(() => import("../games/carracing/CarRacingInitialPage"));
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <div className="carracing-container">
+          <CarRacingInitialPage />
+        </div>
+      </React.Suspense>
+    );
   }
 };
 
