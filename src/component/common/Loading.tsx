@@ -17,7 +17,7 @@ const Loading: React.FC<LoadingProps> = ({ size = 150 }) => {
       left: 0,
     }}>
       <img 
-        src="/loader.gif" 
+        src="/GameHub/loader.gif" 
         alt="Loading..." 
         style={{
           width: size,

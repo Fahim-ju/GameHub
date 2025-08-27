@@ -1,7 +1,7 @@
 import { EnumGameId } from "../enum/EnumGameId";
-import { GameCategory, type Game } from "../models/GameModels";
+import { GameCategory, type Game } from "../models/GameCoreModels";
 
-const ticTacToeGameData: Game = {
+export const ticTacToeGameData: Game = {
   gameId: EnumGameId.TicTacToe,
   name: "Tic Tac Toe",
   description: "A classic 3x3 grid game.",

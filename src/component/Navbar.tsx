@@ -1,14 +1,16 @@
 import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { createScope, animate, Scope, stagger, text } from "animejs";
-import { useRef, useState, useEffect } from "react";
+import { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const root = useRef(null);
   const scope = useRef<Scope>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
-    scope.current = createScope({ root }).add((self) => {
+    scope.current = createScope({ root }).add(() => {
       // Every anime.js instances declared here are now scopped to <div ref={root}>
 
       // Created a bounce animation loop
@@ -61,7 +63,7 @@ export const Navbar = () => {
   }, []);
 
   const handleClick = () => {
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
@@ -72,7 +74,7 @@ export const Navbar = () => {
       >
         <div className="flex flex-wrap items-center justify-between text-slate-800">
           <div className="flex shrink-0 items-center logoWithTitle" onClick={handleClick} style={{ cursor: "pointer" }}>
-            <img src="/original_logo.gif" alt="GameHub Logo" className="h-15 w-15" />
+            <img src="/GameHub/original_logo.gif" alt="GameHub Logo" className="h-15 w-15" />
             <span className="ml-2 mt-5 font-['Orbitron_Variable'] text-xl text-white title">GameHub</span>
           </div>
           <div className="flex-1 max-w-lg px-4">
