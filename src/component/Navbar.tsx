@@ -2,10 +2,12 @@ import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/react";
 import { MagnifyingGlassIcon } from "@heroicons/react/24/outline";
 import { createScope, animate, Scope, stagger, text } from "animejs";
 import { useRef, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 
 export const Navbar = () => {
   const root = useRef(null);
   const scope = useRef<Scope>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     scope.current = createScope({ root }).add(() => {
@@ -61,7 +63,7 @@ export const Navbar = () => {
   }, []);
 
   const handleClick = () => {
-    window.location.href = "/";
+    navigate("/");
   };
 
   return (
