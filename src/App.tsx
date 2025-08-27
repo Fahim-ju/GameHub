@@ -5,6 +5,7 @@ import HomePage from "./pages/Home";
 import GamePage from "./pages/Game";
 import NotFound from "./pages/NotFoundPage";
 
+const baseUrl = import.meta.env.BASE_URL || "/GameHub/";
 const router = createBrowserRouter([
   {
     path: "/",
@@ -18,7 +19,9 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
-]);
+],{
+  basename: baseUrl // Use the base URL here
+});
 
 function App() {
   return (
