@@ -3,7 +3,7 @@ import "./App.css";
 import { Navbar } from "./component/Navbar";
 import HomePage from "./pages/Home";
 import GamePage from "./pages/Game";
-import NotFound from "./pages/NotFound";
+import NotFound from "./pages/NotFoundPage";
 
 const router = createBrowserRouter([
   {
@@ -18,9 +18,7 @@ const router = createBrowserRouter([
     path: "*",
     element: <NotFound />,
   },
-], {
-  basename: '/GameHub'
-});
+]);
 
 function App() {
   return (
