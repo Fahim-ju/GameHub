@@ -101,14 +101,14 @@ const CarRacingInitialPage = () => {
               <small>Balanced Performance</small>
             </motion.div>
             <motion.div
-              className={`vehicle-option ${settings.vehicleType === VehicleType.TRUCK ? "selected" : ""}`}
-              onClick={() => updateSettings({ vehicleType: VehicleType.TRUCK })}
+              className={`vehicle-option ${settings.vehicleType === VehicleType.POLICE ? "selected" : ""}`}
+              onClick={() => updateSettings({ vehicleType: VehicleType.POLICE })}
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="vehicle-icon">🚚</div>
-              <p>Truck</p>
-              <small>Powerful & Sturdy</small>
+              <div className="vehicle-icon">�</div>
+              <p>Police</p>
+              <small>Fast & Agile</small>
             </motion.div>
           </div>
         </div>

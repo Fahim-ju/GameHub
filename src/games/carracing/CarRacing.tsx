@@ -28,7 +28,7 @@ const CAR_WIDTH = 40;
 const CAR_HEIGHT = 60;
 const OBSTACLE_WIDTH = 30;
 const OBSTACLE_HEIGHT = 40;
-const ROAD_PADDING = 20;
+const ROAD_PADDING = 30;
 const POWER_UP_SIZE = 30;
 
 const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehicleType, backToSettings }) => {
@@ -140,18 +140,12 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
       const ctx = canvas.getContext("2d");
       if (!ctx) return;
 
-      // Calculate lanes based on canvas width
-      const totalWidth = canvas.width;
-      const laneCount = 3;
-      const roadWidth = totalWidth - ROAD_PADDING * 2;
-      const laneWidth = roadWidth / laneCount;
-
-      // Position players
+      // Position players in the middle of the road
       gameStateRef.current.player1 = {
-        x: ROAD_PADDING + laneWidth * 1 + (laneWidth - CAR_WIDTH) / 2,
+        x: canvas.width / 2 - CAR_WIDTH / 2, // Center of the canvas
         y: canvas.height - CAR_HEIGHT - 20,
         speed: 3,
-        lane: 1,
+        lane: 1, // Keep lane for backward compatibility, but not used for positioning
       };
 
       gameStateRef.current.obstacles = [];
@@ -217,31 +211,31 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     scoreRef.current = score;
   }, [score]);
 
-  const processInput = useCallback((laneWidth: number) => {
+  const processInput = useCallback(() => {
     const keys = gameStateRef.current.keysPressed;
+    const canvas = canvasRef.current;
+    if (!canvas) return;
 
-    // Player 1 controls (Arrow keys)
+    // Player 1 controls (Arrow keys) - Allow movement to road edges only
     if (keys.has("ArrowLeft")) {
-      if (gameStateRef.current.player1.lane > 0) {
-        // Reduce sensitivity: smaller lane change per frame
-        const LANE_CHANGE = 0.04;
-        gameStateRef.current.player1.lane = Math.max(0, gameStateRef.current.player1.lane - LANE_CHANGE);
-        gameStateRef.current.player1.x = ROAD_PADDING + gameStateRef.current.player1.lane * laneWidth + (laneWidth - CAR_WIDTH) / 2;
-      }
+      // Allow movement to the road edge (not into grass)
+      const minX = ROAD_PADDING; // Stop at road edge
+      gameStateRef.current.player1.x = Math.max(minX, gameStateRef.current.player1.x - gameStateRef.current.player1.speed);
     }
     if (keys.has("ArrowRight")) {
-      const maxLane = 2;
-      if (gameStateRef.current.player1.lane < maxLane) {
-        // Reduce sensitivity: smaller lane change per frame
-        const LANE_CHANGE = 0.04;
-        gameStateRef.current.player1.lane = Math.min(maxLane, gameStateRef.current.player1.lane + LANE_CHANGE);
-        gameStateRef.current.player1.x = ROAD_PADDING + gameStateRef.current.player1.lane * laneWidth + (laneWidth - CAR_WIDTH) / 2;
-      }
+      // Allow movement to the road edge (not into grass)
+      const maxX = canvas.width - ROAD_PADDING - CAR_WIDTH; // Stop at road edge
+      gameStateRef.current.player1.x = Math.min(maxX, gameStateRef.current.player1.x + gameStateRef.current.player1.speed);
     }
   }, []);
 
   // Helper functions
   const drawRoad = useCallback((ctx: CanvasRenderingContext2D, canvas: HTMLCanvasElement, laneCount: number, laneWidth: number) => {
+    // Draw roadside (grass) background with a more vibrant color
+    ctx.fillStyle = "#32CD32"; // Lime green for more vibrant grass
+    ctx.fillRect(0, 0, ROAD_PADDING, canvas.height);
+    ctx.fillRect(canvas.width - ROAD_PADDING, 0, ROAD_PADDING, canvas.height);
+
     // Draw road background
     ctx.fillStyle = "#333";
     ctx.fillRect(ROAD_PADDING, 0, canvas.width - ROAD_PADDING * 2, canvas.height);
@@ -528,7 +522,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
 
       // Draw and update
       drawRoad(ctx, canvas, laneCount, laneWidth);
-      processInput(laneWidth);
+      processInput();
       updateObstacles(canvas, deltaTime);
       updatePowerUps(canvas, deltaTime);
       drawCars(ctx);
