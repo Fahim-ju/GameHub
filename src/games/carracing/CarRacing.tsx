@@ -24,9 +24,9 @@ interface PowerUpPosition {
   active: boolean;
 }
 
-const CAR_WIDTH = 40;
+const CAR_WIDTH = 60;
 const CAR_HEIGHT = 60;
-const OBSTACLE_WIDTH = 30;
+const OBSTACLE_WIDTH = 60; // Increased from 30 to make obstacles more challenging in narrower lanes
 const OBSTACLE_HEIGHT = 40;
 const ROAD_PADDING = 30;
 const POWER_UP_SIZE = 30;
@@ -144,7 +144,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
       gameStateRef.current.player1 = {
         x: canvas.width / 2 - CAR_WIDTH / 2, // Center of the canvas
         y: canvas.height - CAR_HEIGHT - 20,
-        speed: 3,
+        speed: 5, // Increased to 5 for better responsiveness in 6 narrow lanes
         lane: 1, // Keep lane for backward compatibility, but not used for positioning
       };
 
@@ -316,12 +316,63 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   );
 
   const createObstacle = useCallback((laneCount: number, laneWidth: number) => {
-    const lane = Math.floor(Math.random() * laneCount);
-    const x = ROAD_PADDING + lane * laneWidth + (laneWidth - OBSTACLE_WIDTH) / 2;
+    // Add more randomness to lane selection with weighted distribution
+    const randomValue = Math.random();
+    let lane;
+
+    // Create a more balanced distribution across all available lanes
+    if (laneCount === 6) {
+      const sixth = 1 / laneCount;
+      if (randomValue < sixth) {
+        lane = 0;
+      } else if (randomValue < sixth * 2) {
+        lane = 1;
+      } else if (randomValue < sixth * 3) {
+        lane = 2;
+      } else if (randomValue < sixth * 4) {
+        lane = 3;
+      } else if (randomValue < sixth * 5) {
+        lane = 4;
+      } else {
+        lane = 5;
+      }
+    } else if (laneCount === 4) {
+      const quarter = 1 / laneCount;
+      if (randomValue < quarter) {
+        lane = 0; // 25% chance for lane 0
+      } else if (randomValue < quarter * 2) {
+        lane = 1; // 25% chance for lane 1
+      } else if (randomValue < quarter * 3) {
+        lane = 2; // 25% chance for lane 2
+      } else {
+        lane = 3; // 25% chance for lane 3
+      }
+    } else if (laneCount === 3) {
+      if (randomValue < 0.4) {
+        lane = 0; // 40% chance for left lane
+      } else if (randomValue < 0.7) {
+        lane = 1; // 30% chance for middle lane
+      } else {
+        lane = 2; // 30% chance for right lane
+      }
+    } else {
+      // Fallback for other lane counts
+      lane = Math.floor(Math.random() * laneCount);
+    }
+
+    // Add horizontal variation within the lane (±8 pixels for more dynamic positioning)
+    const laneVariation = (Math.random() - 0.5) * 16; // -8 to +8 pixels
+    const x = ROAD_PADDING + lane * laneWidth + (laneWidth - OBSTACLE_WIDTH) / 2 + laneVariation;
+
+    // Ensure obstacle stays within lane boundaries (reduced margins for more dynamic gameplay)
+    const minX = ROAD_PADDING + lane * laneWidth + 2; // Reduced from 5 to 2
+    const maxX = ROAD_PADDING + (lane + 1) * laneWidth - OBSTACLE_WIDTH - 2; // Reduced from 5 to 2
+    const clampedX = Math.max(minX, Math.min(maxX, x));
+
     const imageIndex = Math.floor(Math.random() * 9); // 9 different car images
 
     gameStateRef.current.obstacles.push({
-      x,
+      x: clampedX,
       y: -OBSTACLE_HEIGHT,
       lane,
       width: OBSTACLE_WIDTH,
@@ -356,12 +407,63 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   }, []);
 
   const createPowerUp = useCallback((laneCount: number, laneWidth: number) => {
-    const lane = Math.floor(Math.random() * laneCount);
-    const x = ROAD_PADDING + lane * laneWidth + (laneWidth - POWER_UP_SIZE) / 2;
+    // Use same randomization logic as obstacles for consistency
+    const randomValue = Math.random();
+    let lane;
+
+    // Create a more balanced distribution across all available lanes
+    if (laneCount === 6) {
+      const sixth = 1 / laneCount;
+      if (randomValue < sixth) {
+        lane = 0;
+      } else if (randomValue < sixth * 2) {
+        lane = 1;
+      } else if (randomValue < sixth * 3) {
+        lane = 2;
+      } else if (randomValue < sixth * 4) {
+        lane = 3;
+      } else if (randomValue < sixth * 5) {
+        lane = 4;
+      } else {
+        lane = 5;
+      }
+    } else if (laneCount === 4) {
+      const quarter = 1 / laneCount;
+      if (randomValue < quarter) {
+        lane = 0; // 25% chance for lane 0
+      } else if (randomValue < quarter * 2) {
+        lane = 1; // 25% chance for lane 1
+      } else if (randomValue < quarter * 3) {
+        lane = 2; // 25% chance for lane 2
+      } else {
+        lane = 3; // 25% chance for lane 3
+      }
+    } else if (laneCount === 3) {
+      if (randomValue < 0.4) {
+        lane = 0; // 40% chance for left lane
+      } else if (randomValue < 0.7) {
+        lane = 1; // 30% chance for middle lane
+      } else {
+        lane = 2; // 30% chance for right lane
+      }
+    } else {
+      // Fallback for other lane counts
+      lane = Math.floor(Math.random() * laneCount);
+    }
+
+    // Add horizontal variation within the lane (±6 pixels for power-ups)
+    const laneVariation = (Math.random() - 0.5) * 12; // -6 to +6 pixels
+    const x = ROAD_PADDING + lane * laneWidth + (laneWidth - POWER_UP_SIZE) / 2 + laneVariation;
+
+    // Ensure power-up stays within lane boundaries (reduced margins for more dynamic gameplay)
+    const minX = ROAD_PADDING + lane * laneWidth + 2; // Reduced from 3 to 2
+    const maxX = ROAD_PADDING + (lane + 1) * laneWidth - POWER_UP_SIZE - 2; // Reduced from 3 to 2
+    const clampedX = Math.max(minX, Math.min(maxX, x));
+
     const type = Math.random() > 0.5 ? "speed" : "shield";
 
     gameStateRef.current.powerUps.push({
-      x,
+      x: clampedX,
       y: -POWER_UP_SIZE,
       type,
       active: true,
@@ -492,8 +594,8 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     gameStateRef.current.animationFrameId = 0;
     gameStateRef.current.shield = { player1: false };
     gameStateRef.current.speedBoost = { player1: 0 };
-    // ensure player's speed resets to the slower initial speed
-    if (gameStateRef.current.player1) gameStateRef.current.player1.speed = 3;
+    // ensure player's speed resets to the initial speed
+    if (gameStateRef.current.player1) gameStateRef.current.player1.speed = 5;
   };
 
   // Main animation loop
@@ -505,7 +607,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const laneCount = 3;
+    const laneCount = 6; // Optimal number for 60px car/obstacle with 90px lanes
     const roadWidth = canvas.width - ROAD_PADDING * 2;
     const laneWidth = roadWidth / laneCount;
 
@@ -534,8 +636,12 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
         return; // don't schedule another frame or update score
       }
 
-      // Spawn obstacles
-      if (time - gameStateRef.current.lastObstacleTime > 1500 - difficulty.length * 200) {
+      // Spawn obstacles with randomized timing
+      const baseSpawnTime = 1500 - difficulty.length * 200;
+      const randomVariation = (Math.random() - 0.5) * 400; // ±200ms variation
+      const spawnInterval = Math.max(500, baseSpawnTime + randomVariation); // Minimum 500ms
+
+      if (time - gameStateRef.current.lastObstacleTime > spawnInterval) {
         createObstacle(laneCount, laneWidth);
         gameStateRef.current.lastObstacleTime = time;
       }
