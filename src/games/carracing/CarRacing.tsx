@@ -40,8 +40,8 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   // Load car image asset from public folder once
   useEffect(() => {
     const img = new Image();
-    if(vehicleType === VehicleType.SPORT) img.src = "/GameHub/racing-car.png";
-    else if(vehicleType === VehicleType.POLICE) img.src = "/GameHub/police-car.png";
+    if (vehicleType === VehicleType.SPORT) img.src = "/GameHub/racing-car.png";
+    else if (vehicleType === VehicleType.POLICE) img.src = "/GameHub/police-car.png";
     else img.src = "/GameHub/suv-car.png";
 
     img.onload = () => {
@@ -61,14 +61,22 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     // Load shield image
     const shieldImg = new Image();
     shieldImg.src = "/GameHub/car-shield.png";
-    shieldImg.onload = () => { shieldImageRef.current = shieldImg; };
-    shieldImg.onerror = () => { shieldImageRef.current = null; };
+    shieldImg.onload = () => {
+      shieldImageRef.current = shieldImg;
+    };
+    shieldImg.onerror = () => {
+      shieldImageRef.current = null;
+    };
 
     // Load speed image
     const speedImg = new Image();
     speedImg.src = "/GameHub/speed.png";
-    speedImg.onload = () => { speedImageRef.current = speedImg; };
-    speedImg.onerror = () => { speedImageRef.current = null; };
+    speedImg.onload = () => {
+      speedImageRef.current = speedImg;
+    };
+    speedImg.onerror = () => {
+      speedImageRef.current = null;
+    };
 
     return () => {
       shieldImageRef.current = null;
@@ -114,7 +122,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   const [countdown, setCountdown] = useState<number | null>(3);
   const [showHelp, setShowHelp] = useState(false);
   const [gamePaused, setGamePaused] = useState(false);
-  const [pauseSource, setPauseSource] = useState<'space' | 'help' | null>(null);
+  const [pauseSource, setPauseSource] = useState<"space" | "help" | null>(null);
 
   // Game state refs (to avoid dependency issues in animation loop)
   const gameStateRef = useRef({
@@ -193,13 +201,13 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       // Handle spacebar for pause/unpause
-      if (e.code === 'Space') {
+      if (e.code === "Space") {
         e.preventDefault(); // Prevent page scroll
         // Only allow pause/unpause when game is running and not in help modal
         if (gameStarted && !gameOver && !showHelp) {
-          setGamePaused(prev => {
+          setGamePaused((prev) => {
             const newPaused = !prev;
-            setPauseSource(newPaused ? 'space' : null);
+            setPauseSource(newPaused ? "space" : null);
             return newPaused;
           });
         }
@@ -232,7 +240,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     const keys = gameStateRef.current.keysPressed;
     const canvas = canvasRef.current;
     if (!canvas) return;
-        
+
     // Player 1 controls (Arrow keys) - Allow movement to road edges only
     if (keys.has("ArrowLeft")) {
       // Allow movement to the road edge (not into grass)
@@ -510,29 +518,18 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
       if (powerUp.type === "speed") {
         const speedImg = speedImageRef.current;
         if (speedImg) {
-          ctx.drawImage(
-            speedImg,
-            powerUp.x,
-            powerUp.y,
-            POWER_UP_SIZE,
-            POWER_UP_SIZE
-          );
+          ctx.drawImage(speedImg, powerUp.x, powerUp.y, POWER_UP_SIZE, POWER_UP_SIZE);
         } else {
           ctx.fillStyle = "#FFFF00";
           ctx.beginPath();
           ctx.arc(powerUp.x + POWER_UP_SIZE / 2, powerUp.y + POWER_UP_SIZE / 2, POWER_UP_SIZE / 2, 0, Math.PI * 2);
           ctx.fill();
         }
-      } else { // shield
+      } else {
+        // shield
         const shieldImg = shieldImageRef.current;
         if (shieldImg) {
-          ctx.drawImage(
-            shieldImg,
-            powerUp.x,
-            powerUp.y,
-            POWER_UP_SIZE,
-            POWER_UP_SIZE
-          );
+          ctx.drawImage(shieldImg, powerUp.x, powerUp.y, POWER_UP_SIZE, POWER_UP_SIZE);
         } else {
           ctx.fillStyle = "#00FFFF";
           ctx.beginPath();
@@ -632,7 +629,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   const closeHelp = () => {
     setShowHelp(false);
     // Only unpause if the game was paused by opening help
-    if (pauseSource === 'help') {
+    if (pauseSource === "help") {
       setGamePaused(false);
       setPauseSource(null);
       gameStateRef.current.animationFrameId = 0;
@@ -741,8 +738,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   return (
     <div className="carracing-game-container">
       <h1 className="game-title">
-        <span className="game-title-main">Car Racing</span>
-        <span className="game-title-accent">Game</span>
+        <span className="game-title-main">Car Racing Game</span>
       </h1>
 
       <div className="game-controls">
@@ -754,11 +750,14 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
           <span className="pause-key">SPACE</span>
           <span className="pause-text">to Pause</span>
         </div>
-        <button onClick={() => {
-          setGamePaused(true);
-          setPauseSource('help');
-          setShowHelp(true);
-        }} className="control-btn help-btn">
+        <button
+          onClick={() => {
+            setGamePaused(true);
+            setPauseSource("help");
+            setShowHelp(true);
+          }}
+          className="control-btn help-btn"
+        >
           ❓ Help
         </button>
       </div>
@@ -771,12 +770,19 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
 
       {gameOver && (
         <div className="game-over-overlay">
-          <h2>Game Over!</h2>
-          {winner ? <p>{winner} wins!</p> : <p>Your score: {Math.floor(score.player1)}</p>}
-          <div className="game-over-actions">
-            <button onClick={restartGame} className="control-btn restart-btn">
-              Play Again
-            </button>
+          <div className="game-over-modal">
+            <h2>Game Over!</h2>
+            {winner ? <p>{winner} wins!</p> : <p>Final Score: {Math.floor(score.player1)}</p>}
+            <div className="game-over-actions">
+              <button onClick={restartGame} className="control-btn restart-btn">
+                🔄 Play Again
+              </button>
+            </div>
+            <div className="game-over-actions">
+              <button onClick={backToSettings} className="control-btn restart-btn">
+                Back to Settings
+              </button>
+            </div>
           </div>
         </div>
       )}
@@ -786,9 +792,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
 
         {gamePaused && !gameOver && (
           <div className="pause-overlay">
-            <div className="pause-message">
-              {showHelp ? "⏸️ GAME PAUSED" : "⏸️ PAUSED - Press SPACE to Resume"}
-            </div>
+            <div className="pause-message">{showHelp ? "⏸️ GAME PAUSED" : "⏸️ PAUSED - Press SPACE to Resume"}</div>
           </div>
         )}
       </div>
@@ -800,8 +804,17 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
             <span className="player-name">{player1Name}</span>
           </div>
           <div className="power-ups">
-            {gameStateRef.current.shield.player1 && <span className="power-up-indicator shield">🛡️</span>}
-            {gameStateRef.current.speedBoost.player1 > 0 && <span className="power-up-indicator speed">⚡</span>}
+            <div className={`power-up-item ${gameStateRef.current.shield.player1 ? 'active' : 'inactive'}`}>
+              <span className="power-up-indicator shield">🛡️</span>
+              <span className="power-up-label">Shield</span>
+              {/* Reserve timer space even if unused to keep width stable */}
+              <span className="power-up-timer power-up-timer--placeholder" />
+            </div>
+            <div className={`power-up-item ${gameStateRef.current.speedBoost.player1 > 0 ? 'active' : 'inactive'}`}>
+              <span className="power-up-indicator speed">⚡</span>
+              <span className="power-up-label">Speed</span>
+              <span className="power-up-timer">{gameStateRef.current.speedBoost.player1 > 0 ? `${Math.ceil(gameStateRef.current.speedBoost.player1)}s` : ''}</span>
+            </div>
           </div>
         </div>
 
@@ -813,7 +826,9 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
           <div className="help-modal" onClick={(e) => e.stopPropagation()}>
             <div className="help-modal-header">
               <h3>🎮 Game Instructions</h3>
-              <button className="close-btn" onClick={closeHelp}>✕</button>
+              <button className="close-btn" onClick={closeHelp}>
+                ✕
+              </button>
             </div>
             <div className="help-modal-content">
               <div className="help-section">
