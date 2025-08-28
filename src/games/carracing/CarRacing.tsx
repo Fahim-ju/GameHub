@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from "react";
 import type { FC } from "react";
 import type { CarRacingSettings } from "../../core/models/CarRacingModels";
-import { Difficulty } from "../../core/enum/CarRacingEnums";
+import { Difficulty, VehicleType } from "../../core/enum/CarRacingEnums";
 import "./styles/carracing.css";
 
 interface CarRacingProps extends CarRacingSettings {
@@ -25,20 +25,25 @@ interface PowerUpPosition {
 }
 
 const CAR_WIDTH = 40;
-const CAR_HEIGHT = 70;
-const OBSTACLE_WIDTH = 40;
+const CAR_HEIGHT = 60;
+const OBSTACLE_WIDTH = 30;
 const OBSTACLE_HEIGHT = 40;
 const ROAD_PADDING = 20;
 const POWER_UP_SIZE = 30;
 
-const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, backToSettings }) => {
+const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehicleType, backToSettings }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const carImageRef = useRef<HTMLImageElement | null>(null);
   const obstacleImageRef = useRef<HTMLImageElement[] | null>(null);
+  const shieldImageRef = useRef<HTMLImageElement | null>(null);
+  const speedImageRef = useRef<HTMLImageElement | null>(null);
   // Load car image asset from public folder once
   useEffect(() => {
     const img = new Image();
-    img.src = "/GameHub/car1-icon.png";
+    if(vehicleType === VehicleType.SPORT) img.src = "/GameHub/racing-car.png";
+    else if(vehicleType === VehicleType.POLICE) img.src = "/GameHub/police-car.png";
+    else img.src = "/GameHub/suv-car.png";
+
     img.onload = () => {
       carImageRef.current = img;
     };
@@ -49,9 +54,27 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, back
     return () => {
       carImageRef.current = null;
     };
-  }, []);
+  }, [vehicleType]);
 
-  // Load obstacle images from public folder
+  // Load power-up images from public folder
+  useEffect(() => {
+    // Load shield image
+    const shieldImg = new Image();
+    shieldImg.src = "/GameHub/car-shield.png";
+    shieldImg.onload = () => { shieldImageRef.current = shieldImg; };
+    shieldImg.onerror = () => { shieldImageRef.current = null; };
+
+    // Load speed image
+    const speedImg = new Image();
+    speedImg.src = "/GameHub/speed.png";
+    speedImg.onload = () => { speedImageRef.current = speedImg; };
+    speedImg.onerror = () => { speedImageRef.current = null; };
+
+    return () => {
+      shieldImageRef.current = null;
+      speedImageRef.current = null;
+    };
+  }, []);
   useEffect(() => {
     const obstacleImages = [
       "/GameHub/car2.png",
@@ -104,7 +127,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, back
     lastObstacleTime: 0,
     lastPowerUpTime: 0,
     gameTime: 0,
-    difficultySpeed: difficulty === Difficulty.EASY ? 3 : difficulty === Difficulty.MEDIUM ? 5 : 7,
+    difficultySpeed: difficulty === Difficulty.EASY ? 2 : difficulty === Difficulty.MEDIUM ? 3 : 4,
     isGameOver: false,
   });
 
@@ -134,7 +157,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, back
       gameStateRef.current.obstacles = [];
       gameStateRef.current.powerUps = [];
       gameStateRef.current.roadY = 0;
-      gameStateRef.current.difficultySpeed = difficulty === Difficulty.EASY ? 3 : difficulty === Difficulty.MEDIUM ? 5 : 7;
+      gameStateRef.current.difficultySpeed = difficulty === Difficulty.EASY ? 2 : difficulty === Difficulty.MEDIUM ? 3 : 4;
 
       setScore({ player1: 0 });
       setWinner(null);
@@ -366,15 +389,38 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, back
 
       // Draw power-up
       if (powerUp.type === "speed") {
-        ctx.fillStyle = "#FFFF00";
-      } else {
-        // shield
-        ctx.fillStyle = "#00FFFF";
+        const speedImg = speedImageRef.current;
+        if (speedImg) {
+          ctx.drawImage(
+            speedImg,
+            powerUp.x,
+            powerUp.y,
+            POWER_UP_SIZE,
+            POWER_UP_SIZE
+          );
+        } else {
+          ctx.fillStyle = "#FFFF00";
+          ctx.beginPath();
+          ctx.arc(powerUp.x + POWER_UP_SIZE / 2, powerUp.y + POWER_UP_SIZE / 2, POWER_UP_SIZE / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      } else { // shield
+        const shieldImg = shieldImageRef.current;
+        if (shieldImg) {
+          ctx.drawImage(
+            shieldImg,
+            powerUp.x,
+            powerUp.y,
+            POWER_UP_SIZE,
+            POWER_UP_SIZE
+          );
+        } else {
+          ctx.fillStyle = "#00FFFF";
+          ctx.beginPath();
+          ctx.arc(powerUp.x + POWER_UP_SIZE / 2, powerUp.y + POWER_UP_SIZE / 2, POWER_UP_SIZE / 2, 0, Math.PI * 2);
+          ctx.fill();
+        }
       }
-
-      ctx.beginPath();
-      ctx.arc(powerUp.x + POWER_UP_SIZE / 2, powerUp.y + POWER_UP_SIZE / 2, POWER_UP_SIZE / 2, 0, Math.PI * 2);
-      ctx.fill();
 
       // Remove if offscreen
       return powerUp.y < canvas.height;
@@ -383,12 +429,15 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, back
   const checkCollisions = useCallback(() => {
     // Obstacle collisions
     for (const obstacle of gameStateRef.current.obstacles) {
+      // Add collision tolerance to make detection less sensitive
+      const COLLISION_TOLERANCE = 8; // pixels of tolerance
+
       if (
         !gameStateRef.current.shield.player1 &&
-        gameStateRef.current.player1.x < obstacle.x + obstacle.width &&
-        gameStateRef.current.player1.x + CAR_WIDTH > obstacle.x &&
-        gameStateRef.current.player1.y < obstacle.y + obstacle.height &&
-        gameStateRef.current.player1.y + CAR_HEIGHT > obstacle.y
+        gameStateRef.current.player1.x + COLLISION_TOLERANCE < obstacle.x + obstacle.width - COLLISION_TOLERANCE &&
+        gameStateRef.current.player1.x + CAR_WIDTH - COLLISION_TOLERANCE > obstacle.x + COLLISION_TOLERANCE &&
+        gameStateRef.current.player1.y + COLLISION_TOLERANCE < obstacle.y + obstacle.height - COLLISION_TOLERANCE &&
+        gameStateRef.current.player1.y + CAR_HEIGHT - COLLISION_TOLERANCE > obstacle.y + COLLISION_TOLERANCE
       ) {
         handleGameOver(null);
         return;
