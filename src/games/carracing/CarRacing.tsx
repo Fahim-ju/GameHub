@@ -41,7 +41,7 @@ const CarRacing: FC<CarRacingProps> = ({
   // Load car image asset from public folder once
   useEffect(() => {
     const img = new Image();
-    img.src = '/car1-icon.png';
+    img.src = '/GameHub/car1-icon.png';
     img.onload = () => { carImageRef.current = img; };
     img.onerror = () => { carImageRef.current = null; };
 
