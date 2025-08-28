@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import "./styles/carracing.css";
 import { GameMode, Difficulty, VehicleType } from "../../core/enum/CarRacingEnums";
-import type { GameModeType, DifficultyType } from "../../core/enum/CarRacingEnums";
+import type { DifficultyType } from "../../core/enum/CarRacingEnums";
 import CarRacing from "./CarRacing";
 import Loading from "../../component/common/Loading";
 import { useCarRacing } from "../../core/enum/hooks/carracing";
@@ -26,24 +26,7 @@ const CarRacingInitialPage = () => {
     <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="carracing-initial-container">
       <h2>Car Racing Settings</h2>
       <form onSubmit={handleSubmit} className="carracing-settings-form">
-        <div className="form-group">
-          <label>Game Mode:</label>
-          <div className="radio-group">
-            <label>
-              <input
-                type="radio"
-                value={GameMode.SINGLE}
-                checked={settings.gameMode === GameMode.SINGLE}
-                onChange={(e) =>
-                  updateSettings({
-                    gameMode: e.target.value as GameModeType,
-                  })
-                }
-              />
-              Single Player
-            </label>
-          </div>
-        </div>
+        
 
         <div className="form-group">
           <label htmlFor="player1">Player 1 Name:</label>
@@ -96,9 +79,9 @@ const CarRacingInitialPage = () => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="vehicle-icon">🚙</div>
-              <p>SUV</p>
-              <small>Balanced Performance</small>
+                <div className="vehicle-icon">🚗</div>
+                <p>Private Car</p>
+                <small>Comfort & Style</small>
             </motion.div>
             <motion.div
               className={`vehicle-option ${settings.vehicleType === VehicleType.POLICE ? "selected" : ""}`}
@@ -106,9 +89,9 @@ const CarRacingInitialPage = () => {
               whileHover={{ scale: 1.03 }}
               whileTap={{ scale: 0.98 }}
             >
-              <div className="vehicle-icon">�</div>
-              <p>Police</p>
-              <small>Fast & Agile</small>
+                <div className="vehicle-icon">🚓</div>
+                <p>Police Car</p>
+                <small>High Speed Chase</small>
             </motion.div>
           </div>
         </div>
