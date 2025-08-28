@@ -112,6 +112,9 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   const [score, setScore] = useState({ player1: 0 });
   const [winner, setWinner] = useState<string | null>(null);
   const [countdown, setCountdown] = useState<number | null>(3);
+  const [showHelp, setShowHelp] = useState(false);
+  const [gamePaused, setGamePaused] = useState(false);
+  const [pauseSource, setPauseSource] = useState<'space' | 'help' | null>(null);
 
   // Game state refs (to avoid dependency issues in animation loop)
   const gameStateRef = useRef({
@@ -189,6 +192,20 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   // Handle keyboard input
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
+      // Handle spacebar for pause/unpause
+      if (e.code === 'Space') {
+        e.preventDefault(); // Prevent page scroll
+        // Only allow pause/unpause when game is running and not in help modal
+        if (gameStarted && !gameOver && !showHelp) {
+          setGamePaused(prev => {
+            const newPaused = !prev;
+            setPauseSource(newPaused ? 'space' : null);
+            return newPaused;
+          });
+        }
+        return; // Don't add space to keysPressed set
+      }
+
       gameStateRef.current.keysPressed.add(e.key);
     };
 
@@ -203,7 +220,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
       window.removeEventListener("keydown", handleKeyDown);
       window.removeEventListener("keyup", handleKeyUp);
     };
-  }, []);
+  }, [gameStarted, gameOver, showHelp]);
 
   // Minimal input processing (reads keys from ref)
   const scoreRef = useRef(score);
@@ -215,7 +232,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     const keys = gameStateRef.current.keysPressed;
     const canvas = canvasRef.current;
     if (!canvas) return;
-
+        
     // Player 1 controls (Arrow keys) - Allow movement to road edges only
     if (keys.has("ArrowLeft")) {
       // Allow movement to the road edge (not into grass)
@@ -302,13 +319,19 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
 
   const drawScore = useCallback(
     (ctx: CanvasRenderingContext2D) => {
-      ctx.fillStyle = "#FFF";
-      ctx.font = "16px Arial";
-      ctx.textAlign = "left";
-
+      const canvas = ctx.canvas;
       const s = scoreRef.current;
-      // Draw player 1 score
-      ctx.fillText(`${player1Name}: ${Math.floor(s.player1)}`, 20, 30);
+
+      // Draw player name and score at the top center
+      ctx.fillStyle = "#FFF";
+      ctx.font = "bold 20px Arial";
+      ctx.textAlign = "center";
+      ctx.fillText(`${player1Name}: ${Math.floor(s.player1)}`, canvas.width / 2, 25);
+
+      // Add a subtle border
+      ctx.strokeStyle = "#FFD700";
+      ctx.lineWidth = 1;
+      ctx.strokeText(`${player1Name}: ${Math.floor(s.player1)}`, canvas.width / 2, 25);
 
       // single player only
     },
@@ -598,9 +621,35 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
     if (gameStateRef.current.player1) gameStateRef.current.player1.speed = 5;
   };
 
+  const resumeGame = () => {
+    setGamePaused(false);
+    setShowHelp(false);
+    setPauseSource(null);
+    // Reset animation frame ID to ensure clean restart
+    gameStateRef.current.animationFrameId = 0;
+  };
+
+  const closeHelp = () => {
+    setShowHelp(false);
+    // Only unpause if the game was paused by opening help
+    if (pauseSource === 'help') {
+      setGamePaused(false);
+      setPauseSource(null);
+      gameStateRef.current.animationFrameId = 0;
+    }
+  };
+
   // Main animation loop
   useEffect(() => {
-    if (!gameStarted || gameOver) return;
+    if (!gameStarted || gameOver) {
+      return;
+    }
+
+    if (gamePaused) {
+      // Cancel any existing animation frame when paused
+      cancelAnimationFrame(gameStateRef.current.animationFrameId);
+      return;
+    }
 
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -675,6 +724,7 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
   }, [
     gameStarted,
     gameOver,
+    gamePaused,
     gameMode,
     difficulty,
     drawRoad,
@@ -690,17 +740,27 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
 
   return (
     <div className="carracing-game-container">
-      <h1>Car Racing Game</h1>
+      <h1 className="game-title">
+        <span className="game-title-main">Car Racing</span>
+        <span className="game-title-accent">Game</span>
+      </h1>
 
       <div className="game-controls">
         <button onClick={backToSettings} className="control-btn">
           Back to Settings
         </button>
-        {gameOver && (
-          <button onClick={restartGame} className="control-btn restart-btn">
-            Play Again
-          </button>
-        )}
+        <div className="pause-instruction">
+          <span className="pause-text">Press</span>
+          <span className="pause-key">SPACE</span>
+          <span className="pause-text">to Pause</span>
+        </div>
+        <button onClick={() => {
+          setGamePaused(true);
+          setPauseSource('help');
+          setShowHelp(true);
+        }} className="control-btn help-btn">
+          ❓ Help
+        </button>
       </div>
 
       {countdown !== null && (
@@ -724,25 +784,88 @@ const CarRacing: FC<CarRacingProps> = ({ gameMode, player1Name, difficulty, vehi
       <div className="game-area">
         <canvas ref={canvasRef} width={600} height={500} className="racing-canvas" />
 
-        {!gameStarted && countdown === null && !gameOver && (
-          <div className="instructions-overlay">
-            <h3>Controls:</h3>
-            <p>Player 1: Left/Right Arrow Keys</p>
-            {/* single player only */}
-            <p>Avoid obstacles and collect power-ups!</p>
+        {gamePaused && !gameOver && (
+          <div className="pause-overlay">
+            <div className="pause-message">
+              {showHelp ? "⏸️ GAME PAUSED" : "⏸️ PAUSED - Press SPACE to Resume"}
+            </div>
           </div>
         )}
       </div>
 
       <div className="game-info">
         <div className="player-info">
-          <span className="player-name">{player1Name}</span>
-          {gameStateRef.current.shield.player1 && <span className="power-up-indicator shield">🛡️</span>}
-          {gameStateRef.current.speedBoost.player1 > 0 && <span className="power-up-indicator speed">⚡</span>}
+          <div className="player-name-container">
+            <span className="player-label">Player:</span>
+            <span className="player-name">{player1Name}</span>
+          </div>
+          <div className="power-ups">
+            {gameStateRef.current.shield.player1 && <span className="power-up-indicator shield">🛡️</span>}
+            {gameStateRef.current.speedBoost.player1 > 0 && <span className="power-up-indicator speed">⚡</span>}
+          </div>
         </div>
 
         {/* single player only - player2 removed */}
       </div>
+
+      {showHelp && (
+        <div className="help-modal-overlay" onClick={closeHelp}>
+          <div className="help-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="help-modal-header">
+              <h3>🎮 Game Instructions</h3>
+              <button className="close-btn" onClick={closeHelp}>✕</button>
+            </div>
+            <div className="help-modal-content">
+              <div className="help-section">
+                <h4>Controls</h4>
+                <div className="controls-list">
+                  <div className="control-item">
+                    <span className="control-key">← →</span>
+                    <span className="control-description">Use arrow keys to move your car left and right</span>
+                  </div>
+                </div>
+              </div>
+              <div className="help-section">
+                <h4>Objective</h4>
+                <p>Avoid hitting other cars and obstacles on the road. The longer you survive, the higher your score!</p>
+              </div>
+              <div className="help-section">
+                <h4>Power-ups</h4>
+                <div className="power-ups-list">
+                  <div className="power-up-item">
+                    <span className="power-up-icon">🛡️</span>
+                    <div>
+                      <strong>Shield</strong>
+                      <p>Makes you invincible for 5 seconds</p>
+                    </div>
+                  </div>
+                  <div className="power-up-item">
+                    <span className="power-up-icon">⚡</span>
+                    <div>
+                      <strong>Speed Boost</strong>
+                      <p>Increases your movement speed for 5 seconds</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div className="help-section">
+                <h4>Tips</h4>
+                <ul>
+                  <li>Stay in your lane and watch for incoming traffic</li>
+                  <li>Collect power-ups to gain advantages</li>
+                  <li>The game gets faster as you progress</li>
+                  <li>Use the shield strategically when obstacles are close</li>
+                </ul>
+              </div>
+              <div className="help-modal-actions">
+                <button onClick={resumeGame} className="control-btn resume-btn">
+                  ▶️ Resume Game
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
