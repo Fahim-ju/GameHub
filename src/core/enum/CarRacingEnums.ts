@@ -12,7 +12,7 @@ export const Difficulty = {
 export const VehicleType = {
   SPORT: "sport",
   SUV: "suv",
-  TRUCK: "truck"
+  POLICE: "police"
 } as const;
 
 export type GameModeType = typeof GameMode[keyof typeof GameMode];
