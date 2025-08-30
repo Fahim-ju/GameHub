@@ -31,7 +31,7 @@ function GameCard({ id, name, description }: GameCardProps) {
     } else if (gameId === EnumGameId.CarRacing) {
       return isHovered
         ? {
-            backgroundImage: `url('/GameHub/carracingstill.png')`,
+            backgroundImage: `url('/GameHub/cargameplaying.gif')`,
             backgroundColor: "transparent", // Ensure no background color is interfering
           }
         : {
