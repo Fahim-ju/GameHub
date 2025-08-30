@@ -1,10 +1,60 @@
 .carracing-initial-container {
   max-width: 600px;
-  margin: 50px;
+  margin: 2rem auto;
   padding: 2rem;
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  background: rgba(0, 0, 0, 0.3);
+  border: 3px solid rgba(255, 69, 0, 0.6);
+  border-radius: 15px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.5), inset 0 0 20px rgba(255, 69, 0, 0.2);
+  animation: carBorderGlow 4s infinite ease-in-out;
+  position: relative;
+  z-index: 1;
+}
+
+@keyframes carBorderGlow {
+  0% {
+    border-color: rgba(255, 69, 0, 0.4);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.4), inset 0 0 15px rgba(255, 69, 0, 0.1);
+  }
+  25% {
+    border-color: rgba(255, 140, 0, 0.6);
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.6), inset 0 0 20px rgba(255, 140, 0, 0.2);
+  }
+  50% {
+    border-color: rgba(255, 215, 0, 0.8);
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.8), inset 0 0 25px rgba(255, 215, 0, 0.3);
+  }
+  75% {
+    border-color: rgba(255, 140, 0, 0.6);
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.6), inset 0 0 20px rgba(255, 140, 0, 0.2);
+  }
+  100% {
+    border-color: rgba(255, 69, 0, 0.4);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.4), inset 0 0 15px rgba(255, 69, 0, 0.1);
+  }
+}
+
+@keyframes carTextGlow {
+  0% {
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.3);
+  }
+  50% {
+    text-shadow: 0 0 15px rgba(255, 140, 0, 0.7);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(255, 69, 0, 0.3);
+  }
+}
+
+.carracing-initial-container h2 {
+  text-align: center;
+  color: #eee;
+  margin-bottom: 2rem;
+  text-shadow: 0 0 10px rgba(255, 69, 0, 0.5);
+  animation: carTextGlow 4s infinite ease-in-out;
+  font-size: 1.8rem;
+  letter-spacing: 1px;
 }
 
 .carracing-settings-form {
@@ -40,14 +90,47 @@
 .form-group input[type="text"],
 .form-group select {
   padding: 0.75rem;
+  border: 2px solid rgba(255, 69, 0, 0.4);
   border-radius: 8px;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  background-color: rgba(0, 0, 0, 0.2);
-  color: #fff;
+  background: rgba(255, 255, 255, 0.1);
+  color: #eee;
   font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.form-group input[type="text"]:hover,
+.form-group select:hover {
+  border-color: rgba(255, 69, 0, 0.5);
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.2);
+}
+
+.form-group input[type="text"]:focus,
+.form-group select:focus {
+  outline: none;
+  border-color: #ff4500;
+  background: rgba(255, 255, 255, 0.2);
+  box-shadow: 0 0 20px rgba(255, 69, 0, 0.3);
 }
 
 .form-group select {
+  cursor: pointer;
+  appearance: none;
+  background-image: linear-gradient(45deg, transparent 50%, rgba(255, 69, 0, 0.8) 50%),
+                    linear-gradient(135deg, rgba(255, 69, 0, 0.8) 50%, transparent 50%);
+  background-position: calc(100% - 20px) calc(1em + 2px),
+                      calc(100% - 15px) calc(1em + 2px);
+  background-size: 5px 5px,
+                  5px 5px;
+  background-repeat: no-repeat;
+}
+
+.form-group select option {
+  background: #331a00;
+  color: #eee;
+  padding: 1rem;
+  font-size: 1rem;
   cursor: pointer;
 }
 
@@ -75,10 +158,10 @@
 }
 
 .vehicle-option.selected {
-  border-color: #4caf50;
-  background-color: rgba(76, 175, 80, 0.3);
+  border-color: #ff4500;
+  background-color: rgba(255, 69, 0, 0.3);
   transform: translateY(-3px);
-  box-shadow: 0 4px 15px rgba(76, 175, 80, 0.5);
+  box-shadow: 0 4px 15px rgba(255, 69, 0, 0.5);
 }
 
 .vehicle-option .vehicle-icon {
@@ -88,7 +171,7 @@
 }
 
 .vehicle-option.selected .vehicle-icon {
-  color: #4caf50;
+  color: #ff4500;
 }
 
 .vehicle-option p {
@@ -96,6 +179,21 @@
   font-size: 1.1rem;
   margin: 0.5rem 0 0;
   color: #f0f0f0;
+}
+
+@keyframes carButtonGlow {
+  0% {
+    background: rgba(255, 69, 0, 0.8);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
+  }
+  50% {
+    background: rgba(255, 140, 0, 0.9);
+    box-shadow: 0 0 15px rgba(255, 140, 0, 0.7);
+  }
+  100% {
+    background: rgba(255, 69, 0, 0.8);
+    box-shadow: 0 0 10px rgba(255, 69, 0, 0.6);
+  }
 }
 
 /* Car Racing Game Styles */
@@ -521,20 +619,24 @@
 }
 
 .start-game-btn {
-  padding: 0.75rem 1.5rem;
+  margin-top: 1rem;
+  padding: 1rem;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #ff6b6b, #ff8e53);
-  color: #fff;
+  background: linear-gradient(135deg, rgba(255, 69, 0, 0.8) 0%, rgba(255, 140, 0, 0.8) 100%);
+  color: white;
   font-size: 1.1rem;
-  font-weight: 600;
+  font-weight: bold;
   cursor: pointer;
-  margin-top: 1rem;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: all 0.3s ease;
+  animation: carButtonGlow 4s infinite ease-in-out;
+  box-shadow: 0 0 15px rgba(255, 69, 0, 0.5);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 }
 
 .start-game-btn:hover {
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.4);
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(255, 140, 0, 0.7);
 }
 
 .carracing-game-container {
