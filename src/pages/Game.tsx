@@ -15,12 +15,21 @@ const GamePage: React.FC = () => {
         </div>
       </React.Suspense>
     );
-  } else if(gameName === EnumGameId.CarRacing){
+  } else if (gameName === EnumGameId.CarRacing) {
     const CarRacingInitialPage = React.lazy(() => import("../games/carracing/CarRacingInitialPage"));
     return (
       <React.Suspense fallback={<Loading />}>
         <div className="carracing-container">
           <CarRacingInitialPage />
+        </div>
+      </React.Suspense>
+    );
+  } else if (gameName === EnumGameId.Snake) {
+    const SnakeInitialPage = React.lazy(() => import("../games/snake/SnakeInitialPage"));
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <div className="snake-container">
+          <SnakeInitialPage />
         </div>
       </React.Suspense>
     );

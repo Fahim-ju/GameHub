@@ -59,9 +59,9 @@ function HomePage() {
           </motion.div>
           <motion.div variants={item}>
             <GameCard
-              id={EnumGameId.Sudoku}
-              name="Sudoku"
-              description="Test your logical thinking with this number-placement puzzle game"
+              id={EnumGameId.Snake}
+              name="Snake"
+              description="Navigate the snake to eat food and grow longer"
             />
           </motion.div>
           {/* Add more games here */}
