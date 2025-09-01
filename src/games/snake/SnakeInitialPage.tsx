@@ -3,7 +3,7 @@ import { SnakeGameMode, type SnakeGameModeType, SnakeSpeed, type SnakeSpeedType 
 import Loading from "../../component/common/Loading";
 import { useSnake } from "../../core/enum/hooks/snake";
 import "../tictactoe/styles/tictactoe.css";
-// import SnakeGame from './SnakeGame'; // Placeholder for future Snake game component
+import SnakeGame from "./SnakeGame";
 
 const SnakeInitialPage = () => {
   const { settings, gameStarted, redirectToGame, updateSettings, startGame, setRedirectToGame } = useSnake();
@@ -13,17 +13,7 @@ const SnakeInitialPage = () => {
   }
 
   if (redirectToGame) {
-    // TODO: Replace placeholder with real SnakeGame component when implemented
-    return (
-      <div style={{ textAlign: "center" }}>
-        <h2>Snake Game Placeholder</h2>
-        <p>Player: {settings.playerName}</p>
-        <p>Mode: {settings.gameMode}</p>
-        <p>Speed: {settings.speed}</p>
-        <button onClick={() => setRedirectToGame(false)}>Back to Settings</button>
-      </div>
-    );
-    // return <SnakeGame {...settings} backToSettings={() => setRedirectToGame(false)} />;
+    return <SnakeGame {...settings} backToSettings={() => setRedirectToGame(false)} />;
   }
 
   const handleSubmit = (e: React.FormEvent) => {
