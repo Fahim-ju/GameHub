@@ -55,6 +55,18 @@ const SnakeGame = (props: SnakeGameProps) => {
   const [isPaused, setIsPaused] = useState(false);
   const [isGameOver, setIsGameOver] = useState(false);
   const [tick, setTick] = useState(0); // force rerun interval when speed changes
+  const [scoreFlash, setScoreFlash] = useState(false);
+
+  // trigger a brief flash animation when score changes
+  const prevScoreRef = useRef(score);
+  useEffect(() => {
+    if (score !== prevScoreRef.current) {
+      setScoreFlash(true);
+      const t = setTimeout(() => setScoreFlash(false), 350);
+      prevScoreRef.current = score;
+      return () => clearTimeout(t);
+    }
+  }, [score]);
 
   const intervalRef = useRef<number | null>(null);
 
@@ -233,9 +245,17 @@ const SnakeGame = (props: SnakeGameProps) => {
   return (
     <div className="snake-game-wrapper">
       <div className="snake-game-top-bar">
-        <motion.div className="score" layout>
-          <strong>{playerName || "Player"}</strong> Score: {score} | Length: {snake.length}
-        </motion.div>
+  <motion.div className="score-panel" layout>
+          <div className="player-block">
+            <span className="label">Player</span>
+            <span className="player-name" title={playerName}>{playerName || "Player"}</span>
+          </div>
+          <div className="divider" aria-hidden="true"></div>
+          <div className="score-block">
+            <span className="label">Score</span>
+            <span className={"score-value" + (scoreFlash ? " flash" : "")}>{score}</span>
+          </div>
+  </motion.div>
         <div className="controls-inline">
           <motion.button whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }} onClick={() => setIsPaused((p) => !p)}>
             {isPaused ? "Resume" : "Pause"}

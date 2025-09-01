@@ -26,6 +26,43 @@
   letter-spacing: 0.5px;
 }
 
+/* New score panel structure */
+.score-panel {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  background: linear-gradient(145deg, #1c1f27 0%, #222834 55%, #1b2028 100%);
+  border: 1px solid #2d3642;
+  padding: 10px 20px;
+  border-radius: 14px;
+  position: relative;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.45), 0 0 0 3px rgba(255,255,255,0.02);
+  font-family: "Orbitron Variable", system-ui, sans-serif;
+  min-width: 260px;
+}
+
+.score-panel:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 14px;
+  padding: 1px;
+  background: linear-gradient(110deg, #ff00886e, #ffa02e3d 35%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;
+  pointer-events: none;
+}
+
+.score-panel .player-block, .score-panel .score-block { display: flex; flex-direction: column; gap: 2px; }
+.score-panel .label { font-size: 10px; text-transform: uppercase; letter-spacing: 1.2px; opacity: 0.65; }
+.score-panel .player-name { font-weight: 600; font-size: 15px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.score-panel .score-value { font-weight: 700; font-size: 20px; color: #ff4fb0; text-shadow: 0 0 6px #ff008899; min-width: 40px; }
+.score-panel .divider { width: 1px; background: linear-gradient(to bottom, #ffffff08, #ffffff25, #ffffff08); }
+
+@keyframes flashPulse { 0% { transform: scale(1); filter: drop-shadow(0 0 0 #ff0088); } 40% { transform: scale(1.18); filter: drop-shadow(0 0 6px #ff0088); } 100% { transform: scale(1); filter: drop-shadow(0 0 0 #ff0088); } }
+.score-value.flash { animation: flashPulse 0.35s ease-out; }
+
 .snake-game-top-bar button {
   background: #ff0088;
   border: none;
@@ -77,13 +114,14 @@
   background: radial-gradient(circle at 30% 30%, #ff5db1, #ff0088 60%);
   box-shadow: 0 0 6px #ff0088, 0 0 14px #ff5db1;
   border-radius: 6px;
+  z-index: 1; /* base layer below overlays */
 }
 
 .cell.body {
   background: linear-gradient(135deg, #ffa02e 0%, #ff5d00 100%);
   border-radius: 4px;
   box-shadow: 0 0 4px #ffa02eaa;
-  z-index: 1; /* Ensure body segments are visible */
+  z-index: 1; /* ensure visible but still below overlay */
 }
 
 .cell.food {
@@ -103,6 +141,7 @@
   gap: 14px;
   backdrop-filter: blur(2px);
   text-align: center;
+  z-index: 10; /* sit above snake segments */
 }
 
 .overlay h2 { font-size: 2rem; margin: 0; }
@@ -122,7 +161,24 @@
 }
 .overlay-actions button:hover { background: #ffa02e; }
 
-.hint-text { font-size: 12px; opacity: .8; }
+.hint-text {
+  font-size: 14px;
+  line-height: 1.35;
+  font-weight: 500;
+  letter-spacing: 0.4px;
+  color: #d8e1ec;
+  opacity: 0.95; /* keep a tiny softness */
+  font-family: "Segoe UI", system-ui, -apple-system, BlinkMacSystemFont, "Roboto", "Ubuntu", sans-serif; /* more readable than Orbitron */
+  background: linear-gradient(135deg, rgba(40,40,48,0.65), rgba(30,30,36,0.55));
+  padding: 8px 14px;
+  border-radius: 10px;
+  backdrop-filter: blur(3px) saturate(140%);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.35);
+  max-width: 640px;
+  text-align: center;
+}
+
+.hint-text p { margin: 0; }
 
 @media (max-width: 640px) {
   .snake-game-top-bar { flex-direction: column; align-items: stretch; }
