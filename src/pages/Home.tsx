@@ -70,6 +70,13 @@ function HomePage() {
           </motion.div>
           <motion.div variants={item}>
             <GameCard
+              id={EnumGameId.Mario}
+              name="Mario"
+              description="Run, jump, and explore a classic platforming adventure (prototype)"
+            />
+          </motion.div>
+          <motion.div variants={item}>
+            <GameCard
               id={EnumGameId.TicTacToe}
               name="Tic-Tac-Toe"
               description="Challenge your strategic thinking with this classic 3x3 grid game"

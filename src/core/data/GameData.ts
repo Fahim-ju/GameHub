@@ -13,3 +13,16 @@ export const ticTacToeGameData: Game = {
   enabled: true,
   route: "/games/tic-tac-toe",
 };
+
+export const marioGameData: Game = {
+  gameId: EnumGameId.Mario,
+  name: "Mario",
+  description: "A prototype platformer adventure.",
+  categories: [GameCategory.Platformer, GameCategory.Adventure, GameCategory.SinglePlayer, GameCategory.Action],
+  thumbnailImage: "/images/games/mario/thumbnail.jpg",
+  hoverImage: "/images/games/mario/hover.jpg",
+  difficulty: 3,
+  featured: false,
+  enabled: true,
+  route: "/games/mario",
+};
