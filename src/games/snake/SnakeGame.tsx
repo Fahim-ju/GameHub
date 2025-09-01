@@ -14,6 +14,11 @@ type Direction = "UP" | "DOWN" | "LEFT" | "RIGHT";
 const BOARD_COLS = 20;
 const BOARD_ROWS = 20;
 
+// Reward (bonus) food configuration
+const REWARD_FREQUENCY = 5; // spawn after every 5 normal foods eaten
+const REWARD_LIFESPAN_MS = 8000; // reward stays this long
+const REWARD_POINTS = 50; // bonus points
+
 const speedMap: Record<string, number> = {
   [SnakeSpeed.SLOW]: 220,
   [SnakeSpeed.NORMAL]: 140,
@@ -56,6 +61,12 @@ const SnakeGame = (props: SnakeGameProps) => {
   const [isGameOver, setIsGameOver] = useState(false);
   const [tick, setTick] = useState(0); // force rerun interval when speed changes
   const [scoreFlash, setScoreFlash] = useState(false);
+  // Track how many normal foods eaten to decide when to spawn reward
+  const foodsEatenRef = useRef(0);
+  const [rewardFood, setRewardFood] = useState<Coord | null>(null);
+  const rewardFoodRef = useRef<Coord | null>(rewardFood);
+  const rewardExpireAtRef = useRef<number | null>(null);
+  const [rewardRemaining, setRewardRemaining] = useState(0); // ms remaining
 
   // trigger a brief flash animation when score changes
   const prevScoreRef = useRef(score);
@@ -67,6 +78,36 @@ const SnakeGame = (props: SnakeGameProps) => {
       return () => clearTimeout(t);
     }
   }, [score]);
+
+  // Reward countdown updater
+  useEffect(() => {
+    const interval = setInterval(() => {
+      if (isPaused || isGameOver) return;
+      const exp = rewardExpireAtRef.current;
+      if (exp) {
+        const remaining = exp - Date.now();
+        if (remaining <= 0) {
+          rewardExpireAtRef.current = null;
+            rewardFoodRef.current = null;
+            setRewardFood(null);
+            setRewardRemaining(0);
+        } else {
+          setRewardRemaining(remaining);
+        }
+      }
+    }, 150);
+    return () => clearInterval(interval);
+  }, [isPaused, isGameOver]);
+
+  const spawnReward = useCallback((exclude: Set<string>) => {
+    // don't overwrite existing reward
+    if (rewardFoodRef.current) return;
+    const reward = randomFood(exclude);
+    rewardFoodRef.current = reward;
+    setRewardFood(reward);
+    rewardExpireAtRef.current = Date.now() + REWARD_LIFESPAN_MS;
+    setRewardRemaining(REWARD_LIFESPAN_MS);
+  }, []);
 
   const intervalRef = useRef<number | null>(null);
 
@@ -176,19 +217,37 @@ const SnakeGame = (props: SnakeGameProps) => {
         }
 
         const currentFood = foodRef.current;
-        const ateFood = newHead.x === currentFood.x && newHead.y === currentFood.y;
-        if (ateFood) {
-          console.log("Ate food! Snake length before:", prev.length);
-          // When eating food, keep the whole snake and add new head
-          const newSnake = [newHead, ...prev];
-          console.log("Snake length after:", newSnake.length);
-          setScore((s) => s + 10);
-          const exclude = new Set(newSnake.map((c) => `${c.x},${c.y}`));
-          const nf = randomFood(exclude);
-          foodRef.current = nf;
-          setFood(nf);
+        const reward = rewardFoodRef.current;
+        const ateRegular = currentFood && newHead.x === currentFood.x && newHead.y === currentFood.y;
+        const ateReward = reward && newHead.x === reward.x && newHead.y === reward.y;
+
+        if (ateRegular || ateReward) {
+          const newSnake = [newHead, ...prev]; // grow
+          if (ateRegular) {
+            setScore((s) => s + 10);
+            foodsEatenRef.current += 1;
+            // respawn regular food
+            const exclude = new Set(newSnake.map((c) => `${c.x},${c.y}`));
+            if (reward) exclude.add(`${reward.x},${reward.y}`);
+            const nf = randomFood(exclude);
+            foodRef.current = nf;
+            setFood(nf);
+            // spawn reward if frequency met
+            if (foodsEatenRef.current % REWARD_FREQUENCY === 0 && !rewardFoodRef.current) {
+              const ex2 = new Set(newSnake.map((c) => `${c.x},${c.y}`));
+              ex2.add(`${nf.x},${nf.y}`);
+              spawnReward(ex2);
+            }
+          }
+          if (ateReward) {
+            setScore((s) => s + REWARD_POINTS);
+            rewardFoodRef.current = null;
+            setRewardFood(null);
+            rewardExpireAtRef.current = null;
+            setRewardRemaining(0);
+          }
           setSnake(newSnake);
-          return newSnake;  // Snake grows by keeping tail
+          return newSnake;
         }
         // Normal movement: add head, remove tail
         return [newHead, ...prev.slice(0, prev.length - 1)];
@@ -197,7 +256,7 @@ const SnakeGame = (props: SnakeGameProps) => {
     return () => {
       if (intervalRef.current) window.clearInterval(intervalRef.current);
     };
-  }, [effectiveSpeed, isPaused, isGameOver, direction, gameMode]);
+  }, [effectiveSpeed, isPaused, isGameOver, direction, gameMode, spawnReward]);
 
   // Restart resets state
   const restart = () => {
@@ -216,6 +275,11 @@ const SnakeGame = (props: SnakeGameProps) => {
     foodRef.current = nf;
     setFood(nf);
     setScore(0);
+  foodsEatenRef.current = 0;
+  rewardFoodRef.current = null;
+  setRewardFood(null);
+  rewardExpireAtRef.current = null;
+  setRewardRemaining(0);
     setIsPaused(false);
     setIsGameOver(false);
     setTick((t) => t + 1);
@@ -226,6 +290,7 @@ const SnakeGame = (props: SnakeGameProps) => {
     const snakeSet = new Map<string, number>();
     snake.forEach((c, idx) => snakeSet.set(`${c.x},${c.y}`, idx));
     const foodKey = `${food.x},${food.y}`;
+    const rewardKey = rewardFood ? `${rewardFood.x},${rewardFood.y}` : null;
     const cells: React.ReactElement[] = [];
     for (let y = 0; y < BOARD_ROWS; y++) {
       for (let x = 0; x < BOARD_COLS; x++) {
@@ -234,13 +299,14 @@ const SnakeGame = (props: SnakeGameProps) => {
         const isHead = idx === 0;
         const isBody = idx !== undefined && idx > 0;
         const isFood = key === foodKey;
+        const isReward = rewardKey !== null && key === rewardKey;
         cells.push(
-          <div key={key + tick} className={"cell" + (isHead ? " head" : "") + (isBody ? " body" : "") + (isFood ? " food" : "")}></div>
+          <div key={key + tick} className={"cell" + (isHead ? " head" : "") + (isBody ? " body" : "") + (isFood ? " food" : "") + (isReward ? " reward-food" : "")}></div>
         );
       }
     }
     return cells;
-  }, [snake, food, tick]);
+  }, [snake, food, rewardFood, tick]);
 
   return (
     <div className="snake-game-wrapper">
@@ -274,6 +340,17 @@ const SnakeGame = (props: SnakeGameProps) => {
         gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`
       }}>
         {gridCells}
+        {rewardFood && (
+          <div className="reward-timer-wrapper">
+            <div className="reward-timer" title="Bonus food timer">
+              <span className="rt-label">Bonus</span>
+              <div className="rt-bar">
+                <div className="rt-fill" style={{ width: `${(rewardRemaining / REWARD_LIFESPAN_MS) * 100}%` }} />
+              </div>
+              <span className="rt-time">{Math.max(0, Math.ceil(rewardRemaining / 1000))}s</span>
+            </div>
+          </div>
+        )}
         <AnimatePresence>
           {isPaused && !isGameOver && (
             <motion.div className="overlay" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
