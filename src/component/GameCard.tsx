@@ -39,11 +39,19 @@ function GameCard({ id, name, description }: GameCardProps) {
             backgroundColor: "transparent", // Ensure no background color is interfering
           };
     }
+    else if (gameId === EnumGameId.Snake) {
+      return isHovered
+        ? {
+            backgroundImage: `url('/GameHub/snakeplaying.gif')`,
+            backgroundColor: "transparent", // Ensure no background color is interfering
+          }
+        : {
+            backgroundImage: `url('/GameHub/snakestill.jpg')`,
+            backgroundColor: "transparent", // Ensure no background color is interfering
+          };
+    }
     return {}; // Default empty style for other games
   };
-
-  // Check if this is the TicTacToe card to apply special styling
-  const isTicTacToe = id === EnumGameId.TicTacToe;
 
   return (
     <div
