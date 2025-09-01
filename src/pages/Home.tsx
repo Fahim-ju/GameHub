@@ -58,11 +58,7 @@ function HomePage() {
             />
           </motion.div>
           <motion.div variants={item}>
-            <GameCard
-              id={EnumGameId.Snake}
-              name="Snake"
-              description="Navigate the snake to eat food and grow longer"
-            />
+            <GameCard id={EnumGameId.Snake} name="Snake" description="Navigate the snake to eat food and grow longer" />
           </motion.div>
           {/* Add more games here */}
           <motion.div variants={item}>
@@ -70,27 +66,6 @@ function HomePage() {
               id={EnumGameId.CarRacing}
               name="Car Racing"
               description="Experience the thrill of high-speed racing in this adrenaline-pumping game"
-            />
-          </motion.div>
-          <motion.div variants={item}>
-            <GameCard
-              id={EnumGameId.TicTacToe}
-              name="Tic-Tac-Toe"
-              description="Challenge your strategic thinking with this classic 3x3 grid game"
-            />
-          </motion.div>
-          <motion.div variants={item}>
-            <GameCard
-              id={EnumGameId.TicTacToe}
-              name="Tic-Tac-Toe"
-              description="Challenge your strategic thinking with this classic 3x3 grid game"
-            />
-          </motion.div>
-          <motion.div variants={item}>
-            <GameCard
-              id={EnumGameId.TicTacToe}
-              name="Tic-Tac-Toe"
-              description="Challenge your strategic thinking with this classic 3x3 grid game"
             />
           </motion.div>
           <motion.div variants={item}>
