@@ -286,27 +286,74 @@ const SnakeGame = (props: SnakeGameProps) => {
   };
 
   const gridCells = useMemo(() => {
-    // Create a map that tracks which positions have snake segments and their index
-    const snakeSet = new Map<string, number>();
-    snake.forEach((c, idx) => snakeSet.set(`${c.x},${c.y}`, idx));
+    const meta = new Map<string, { idx: number; extra: string }>();
+    snake.forEach((c, idx) => meta.set(`${c.x},${c.y}`, { idx, extra: "" }));
+
+    // Derive corner & tail classes
+    for (let i = 1; i < snake.length; i++) {
+      const seg = snake[i];
+      const key = `${seg.x},${seg.y}`;
+      const m = meta.get(key);
+      if (!m) continue;
+      if (i === snake.length - 1) {
+        // Tail orientation relative to previous segment
+        const prev = snake[i - 1];
+        if (prev) {
+          if (prev.x === seg.x) {
+            m.extra += seg.y < prev.y ? " tail tail-dir-up" : " tail tail-dir-down";
+          } else if (prev.y === seg.y) {
+            m.extra += seg.x < prev.x ? " tail tail-dir-left" : " tail tail-dir-right";
+          } else {
+            m.extra += " tail"; // fallback
+          }
+        } else {
+          m.extra += " tail";
+        }
+        continue;
+      }
+      const prev = snake[i - 1];
+      const next = snake[i + 1];
+      if (!next) continue;
+      const dirA = prev.x === seg.x ? (prev.y < seg.y ? "up" : "down") : (prev.x < seg.x ? "left" : "right");
+      const dirB = next.x === seg.x ? (next.y < seg.y ? "up" : "down") : (next.x < seg.x ? "left" : "right");
+      if (dirA !== dirB && dirA && dirB) {
+        // corner
+        const dirs = [dirA, dirB].sort().join("-"); // deterministic
+        m.extra += ` corner corner-${dirs}`;
+      } else {
+        // straight orientation
+        if (dirA === "left" || dirA === "right") m.extra += " horizontal";
+        else m.extra += " vertical";
+      }
+    }
+
     const foodKey = `${food.x},${food.y}`;
     const rewardKey = rewardFood ? `${rewardFood.x},${rewardFood.y}` : null;
+    const headDirClass = ` dir-${direction.toLowerCase()}`;
     const cells: React.ReactElement[] = [];
     for (let y = 0; y < BOARD_ROWS; y++) {
       for (let x = 0; x < BOARD_COLS; x++) {
         const key = `${x},${y}`;
-        const idx = snakeSet.get(key);
+        const m = meta.get(key);
+        const idx = m?.idx;
         const isHead = idx === 0;
         const isBody = idx !== undefined && idx > 0;
         const isFood = key === foodKey;
         const isReward = rewardKey !== null && key === rewardKey;
-        cells.push(
-          <div key={key + tick} className={"cell" + (isHead ? " head" : "") + (isBody ? " body" : "") + (isFood ? " food" : "") + (isReward ? " reward-food" : "")}></div>
-        );
+        let cls = "cell";
+        if (isHead) cls += " head" + headDirClass;
+        if (isBody) cls += " body" + (m?.extra || "");
+        if (isFood) cls += " food";
+        if (isReward) cls += " reward-food";
+        let style: React.CSSProperties | undefined;
+        if (isHead || isBody) {
+          style = { ['--si' as unknown as string]: String(idx), ['--len' as unknown as string]: String(snake.length) };
+        }
+        cells.push(<div key={key + tick} className={cls} style={style}></div>);
       }
     }
     return cells;
-  }, [snake, food, rewardFood, tick]);
+  }, [snake, food, rewardFood, direction, tick]);
 
   return (
     <div className="snake-game-wrapper">
