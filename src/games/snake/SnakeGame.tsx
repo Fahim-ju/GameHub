@@ -335,7 +335,7 @@ const SnakeGame = (props: SnakeGameProps) => {
         </div>
       </div>
 
-      <div className="board" style={{ 
+      <div className={"board " + (gameMode === SnakeGameMode.CLASSIC ? "classic-mode" : "modern-mode")} style={{ 
         gridTemplateColumns: `repeat(${BOARD_COLS}, 1fr)`,
         gridTemplateRows: `repeat(${BOARD_ROWS}, 1fr)`
       }}>
