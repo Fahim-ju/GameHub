@@ -96,11 +96,25 @@
   grid-template-rows: repeat(20, 1fr); /* must match BOARD_ROWS */
   grid-auto-rows: 1fr; /* safety */
   border: 3px solid #333;
-  background: repeating-linear-gradient(45deg, #0d0d0d, #0d0d0d 8px, #101010 8px, #101010 16px);
+  background: radial-gradient(circle at 60% 40%, #111 0%, #0b0b0b 65%) , repeating-linear-gradient(45deg, #0d0d0d, #0d0d0d 8px, #101010 8px, #101010 16px);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 0 0 4px #111, 0 0 12px rgba(0,0,0,0.6);
   flex-shrink: 0; /* prevent flex container from shrinking it */
+}
+
+/* Subtle grid lines overlay */
+.board:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(#18181855 1px, transparent 1px) repeat-y,
+    linear-gradient(90deg,#18181855 1px, transparent 1px) repeat-x;
+  background-size: calc(100% / 20) calc(100% / 20), calc(100% / 20) calc(100% / 20);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  opacity: .35;
 }
 
 /* Modern mode subtle edge */
@@ -310,10 +324,23 @@
 }
 
 .cell.food {
-  background: radial-gradient(circle at 30% 30%, #00ffc6, #00bfa5 70%);
+  background: radial-gradient(circle at 30% 30%, #00ffe0 0%, #00d0b5 60%, #009a81 100%);
   border-radius: 50%;
-  box-shadow: 0 0 4px #00ffc6, 0 0 10px #00bfa5;
+  box-shadow: 0 0 3px #00ffe0, 0 0 9px #00d0b5, 0 0 14px #00ffc633;
+  position: relative;
 }
+.cell.food:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(circle at 35% 35%, rgba(255,255,255,0.9) 0 18%, transparent 22%);
+  mix-blend-mode: screen;
+  opacity: .9;
+}
+
+/* Performance toggle for heavy animations */
+.reduced-anim .cell.head, .reduced-anim .cell.body, .reduced-anim .cell.reward-food { animation: none !important; }
+.reduced-anim .snake-svg { filter: none !important; }
 
 /* Reward (bonus) food styling */
 .cell.reward-food {

@@ -30,6 +30,7 @@ const SnakeSegment: React.FC<SnakeSegmentProps> = ({ kind, dir, enterDir, index,
   const light = 55 - progress * 15;
   const fill = `hsl(${hue} ${saturation}% ${light}%)`;
   const stroke = `hsl(${hue} ${Math.min(100, saturation + 5)}% ${Math.max(20, light - 25)}%)`;
+  const gloss = `hsl(${hue} ${Math.min(100, saturation + 10)}% ${Math.min(95, light + 32)}% / .9)`;
 
   // Head SVG with eyes & tongue
   if (kind === 'head') {
@@ -43,11 +44,18 @@ const SnakeSegment: React.FC<SnakeSegmentProps> = ({ kind, dir, enterDir, index,
           </radialGradient>
         </defs>
         <circle cx="50" cy="50" r="44" fill={`url(#headGrad-${index})`} stroke={stroke} strokeWidth="4" />
-        {/* Eyes */}
-        <circle cx="35" cy="42" r="9" fill="#fff" />
-        <circle cx="65" cy="42" r="9" fill="#fff" />
-        <circle cx="38" cy="44" r="4" fill="#111" />
-        <circle cx="62" cy="44" r="4" fill="#111" />
+        {/* Gloss highlight */}
+        <ellipse cx="44" cy="42" rx="20" ry="14" fill={gloss} opacity="0.5" />
+        {/* Eyes (grouped) */}
+        <g className="eyes">
+          <circle cx="35" cy="42" r="9" fill="#fff" />
+          <circle cx="65" cy="42" r="9" fill="#fff" />
+          {/* Pupils slightly inward based on direction to give look */}
+          <circle cx={dir === 'left' ? 33 : dir === 'right' ? 37 : 35} cy={dir === 'down' ? 44 : 42} r="4" fill="#111" />
+          <circle cx={dir === 'right' ? 67 : dir === 'left' ? 63 : 65} cy={dir === 'down' ? 44 : 42} r="4" fill="#111" />
+          <circle cx={dir === 'left' ? 31.5 : dir === 'right' ? 35.5 : 34} cy={dir === 'down' ? 42.5 : 41} r="1.2" fill="#fff" />
+          <circle cx={dir === 'right' ? 68.5 : dir === 'left' ? 64.5 : 66} cy={dir === 'down' ? 42.5 : 41} r="1.2" fill="#fff" />
+        </g>
         {/* Tongue */}
         <path d="M50 60 q0 8 4 16 -4 -4 -4 12 -4 -16 -4 -12 4 -8 4 -16z" fill="#ff2a2a" stroke="#aa0000" strokeWidth="2" strokeLinejoin="round" />
       </svg>
@@ -79,7 +87,8 @@ const SnakeSegment: React.FC<SnakeSegmentProps> = ({ kind, dir, enterDir, index,
   // straight body
   return (
     <svg className="snake-svg body-svg" viewBox="0 0 100 100" style={{ transform: `rotate(${rot}deg)` }}>
-      <rect x="22" y="6" width="56" height="88" rx="34" fill={fill} stroke={stroke} strokeWidth="4" />
+  <rect x="22" y="6" width="56" height="88" rx="34" fill={fill} stroke={stroke} strokeWidth="4" />
+  <rect x="26" y="10" width="48" height="68" rx="30" fill={gloss} opacity="0.08" />
     </svg>
   );
 };
