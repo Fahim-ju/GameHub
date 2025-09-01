@@ -51,15 +51,19 @@
 
 .board {
   position: relative;
-  width: min(680px, 95%);
-  aspect-ratio: 1 / 1;
+  /* Fixed board size so it never changes with content */
+  width: 600px;
+  height: 600px; /* remove aspect-ratio reliance */
+  max-width: 100%; /* still responsive on very small screens */
   display: grid;
-  grid-template-rows: repeat(20, 1fr); /* Fixed grid rows to match BOARD_ROWS */
+  grid-template-rows: repeat(20, 1fr); /* must match BOARD_ROWS */
+  grid-auto-rows: 1fr; /* safety */
   border: 3px solid #333;
   background: repeating-linear-gradient(45deg, #0d0d0d, #0d0d0d 8px, #101010 8px, #101010 16px);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 0 0 4px #111, 0 0 12px rgba(0,0,0,0.6);
+  flex-shrink: 0; /* prevent flex container from shrinking it */
 }
 
 .cell {
@@ -123,5 +127,5 @@
 @media (max-width: 640px) {
   .snake-game-top-bar { flex-direction: column; align-items: stretch; }
   .controls-inline { width: 100%; justify-content: space-between; }
-  .board { width: 100%; }
+  .board { width: 100%; height: min(100vw, 100vh - 240px); max-height: 600px; }
 }

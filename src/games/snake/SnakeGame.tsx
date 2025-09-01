@@ -175,6 +175,7 @@ const SnakeGame = (props: SnakeGameProps) => {
           const nf = randomFood(exclude);
           foodRef.current = nf;
           setFood(nf);
+          setSnake(newSnake);
           return newSnake;  // Snake grows by keeping tail
         }
         // Normal movement: add head, remove tail
