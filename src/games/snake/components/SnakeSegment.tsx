@@ -37,27 +37,40 @@ const SnakeSegment: React.FC<SnakeSegmentProps> = ({ kind, dir, enterDir, index,
     return (
       <svg className="snake-svg head-svg" viewBox="0 0 100 100" style={{ transform: `rotate(${rot}deg)` }}>
         <defs>
-          <radialGradient id={`headGrad-${index}`} cx="40%" cy="40%" r="70%">
-            <stop offset="0%" stopColor="#ffd7ef" />
+          <radialGradient id={`headGrad-${index}`} cx="48%" cy="58%" r="60%">
+            <stop offset="0%" stopColor={gloss} />
             <stop offset="55%" stopColor={fill} />
             <stop offset="100%" stopColor={stroke} />
           </radialGradient>
+          <linearGradient id={`jawGrad-${index}`} x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor={fill} />
+            <stop offset="100%" stopColor={stroke} />
+          </linearGradient>
+          <radialGradient id={`tongueGrad-${index}`} cx="50%" cy="10%" r="90%">
+            <stop offset="0%" stopColor="#ffb1b1" />
+            <stop offset="60%" stopColor="#ff2a2a" />
+            <stop offset="100%" stopColor="#b80000" />
+          </radialGradient>
         </defs>
-        <circle cx="50" cy="50" r="44" fill={`url(#headGrad-${index})`} stroke={stroke} strokeWidth="4" />
-        {/* Gloss highlight */}
-        <ellipse cx="44" cy="42" rx="20" ry="14" fill={gloss} opacity="0.5" />
-        {/* Eyes (grouped) */}
+        {/* Head back (so jaws can animate over dark cavity) */}
+        <path d="M15 70 Q15 35 50 15 Q85 35 85 70 Q70 90 50 92 Q30 90 15 70Z" fill={`url(#headGrad-${index})`} stroke={stroke} strokeWidth="4" strokeLinejoin="round" />
+        {/* Mouth cavity */}
+        <path className="mouth-cavity" d="M28 56 Q50 40 72 56 Q61 58 50 59.5 Q39 58 28 56Z" fill="#270012" />
+        {/* Tongue inside mouth (flick via CSS) */}
+        <path className="tongue" d="M50 58 Q53 70 50 82 Q47 70 50 58Z" fill={`url(#tongueGrad-${index})`} />
+        {/* Lower jaw (animated) */}
+        <path className="lower-jaw" d="M22 58 Q50 50 78 58 Q68 63 50 66 Q32 63 22 58Z" fill={`url(#jawGrad-${index})`} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+        {/* Upper jaw (static) */}
+        <path className="upper-jaw" d="M20 56 Q50 28 80 56 Q66 52 50 52 Q34 52 20 56Z" fill={`url(#jawGrad-${index})`} stroke={stroke} strokeWidth="3" strokeLinejoin="round" />
+        {/* Eyes */}
         <g className="eyes">
-          <circle cx="35" cy="42" r="9" fill="#fff" />
-          <circle cx="65" cy="42" r="9" fill="#fff" />
-          {/* Pupils slightly inward based on direction to give look */}
-          <circle cx={dir === 'left' ? 33 : dir === 'right' ? 37 : 35} cy={dir === 'down' ? 44 : 42} r="4" fill="#111" />
-          <circle cx={dir === 'right' ? 67 : dir === 'left' ? 63 : 65} cy={dir === 'down' ? 44 : 42} r="4" fill="#111" />
-          <circle cx={dir === 'left' ? 31.5 : dir === 'right' ? 35.5 : 34} cy={dir === 'down' ? 42.5 : 41} r="1.2" fill="#fff" />
-          <circle cx={dir === 'right' ? 68.5 : dir === 'left' ? 64.5 : 66} cy={dir === 'down' ? 42.5 : 41} r="1.2" fill="#fff" />
+          <circle cx="37" cy="46" r="8" fill="#fff" />
+          <circle cx="63" cy="46" r="8" fill="#fff" />
+          <circle cx={dir === 'left' ? 35 : dir === 'right' ? 39 : 37} cy={dir === 'down' ? 48 : 46} r="3.6" fill="#111" />
+            <circle cx={dir === 'right' ? 65 : dir === 'left' ? 61 : 63} cy={dir === 'down' ? 48 : 46} r="3.6" fill="#111" />
+          <circle cx={dir === 'left' ? 34 : dir === 'right' ? 38 : 36.3} cy={dir === 'down' ? 46.8 : 45.6} r="1.1" fill="#fff" />
+          <circle cx={dir === 'right' ? 66 : dir === 'left' ? 62 : 64} cy={dir === 'down' ? 46.8 : 45.6} r="1.1" fill="#fff" />
         </g>
-        {/* Tongue */}
-        <path d="M50 60 q0 8 4 16 -4 -4 -4 12 -4 -16 -4 -12 4 -8 4 -16z" fill="#ff2a2a" stroke="#aa0000" strokeWidth="2" strokeLinejoin="round" />
       </svg>
     );
   }
