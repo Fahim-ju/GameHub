@@ -23,6 +23,16 @@ interface DifficultyConfig {
   jumpVelocity: number;    // px/sec upward
 }
 
+// Life pickup (heart)
+interface HeartPickup {
+  id: number;
+  x: number;
+  size: number;
+  heightAboveGround: number; // vertical placement above ground baseline
+  collected: boolean;
+  hue: number; // color variance for gradient
+}
+
 const difficultyConfigs: Record<MarioGameSettings["difficulty"], DifficultyConfig> = {
   easy:   { speed: 260, spawnMin: 1600, spawnMax: 2300, gravity: 1550, jumpVelocity: 620 },
   normal: { speed: 330, spawnMin: 1200, spawnMax: 1900, gravity: 1700, jumpVelocity: 650 },
@@ -45,6 +55,10 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   const obstaclesRef = useRef<Obstacle[]>([]);
   const lastSpawnRef = useRef<number>(0);
   const nextSpawnDelayRef = useRef<number>(0);
+  // Hearts
+  const heartsRef = useRef<HeartPickup[]>([]);
+  const heartLastSpawnRef = useRef<number>(0);
+  const heartNextSpawnDelayRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
   const lastTsRef = useRef<number>(0);
 
@@ -59,6 +73,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   });
 
   const config = difficultyConfigs[difficulty];
+  const [livesFlash, setLivesFlash] = useState(false);
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return;
@@ -102,33 +117,74 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   const spawnObstacle = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return;
     const h = parseInt(canvas.style.height) || 540;
-    const groundY = h - 70; // ground line y
-    const baseHeight = 32 + Math.random() * 42; // 32-74
-    const width = 32 + Math.random() * 28; // 32-60
-    const colors = ["#ff4d4d", "#ff8c1a", "#ffd31a", "#1affd1", "#ff1aaf"]; // neon-ish
+    const groundY = h - 70; // ground baseline
+    const baseHeight = 32 + Math.random() * 42; // candidate height
+    const width = 32 + Math.random() * 28; // obstacle width
+    const colors = ["#ff4d4d", "#ff8c1a", "#ffd31a", "#1affd1", "#ff1aaf"]; // palette
+    const flightTime = (2 * config.jumpVelocity) / config.gravity; // total air time of a full jump (s)
+    const jumpApex = (config.jumpVelocity * config.jumpVelocity) / (2 * config.gravity); // max vertical reach (px)
+    // Height clamp: never exceed (apex - clearance) & 55% of ground clearance
+    const clearance = 14; // pixels below apex to ensure player clearance
+    const maxAllowed = Math.min(jumpApex - clearance, groundY * 0.55);
     const obstacle: Obstacle = {
       id: performance.now() + Math.random(),
       x: (parseInt(canvas.style.width) || canvas.width) + 20,
       width,
-      height: baseHeight,
+      height: Math.max(24, Math.min(baseHeight, maxAllowed)),
       color: colors[Math.floor(Math.random()*colors.length)],
       passed: false,
     };
-    // Clamp obstacle height so it doesn't cover too much vertical space
-    const maxHeight = Math.max(28, groundY * 0.55);
-    obstacle.height = Math.min(baseHeight, maxHeight);
-    // Safety: ensure horizontal gap from previous obstacle not less than safe threshold
+    // Horizontal gap constraint with previous obstacle so player can execute distinct jumps:
+    // Need time to finish prior jump & (optionally) re-jump. Use portion of flight time plus width influence.
     const prev = obstaclesRef.current[obstaclesRef.current.length - 1];
     if (prev) {
-      // Compute horizontal gap that will exist when this obstacle reaches player
-      // Since obstacles move left, we only need to enforce initial placement gap
-      const minHorizontalGapPx = (config.jumpVelocity * config.jumpVelocity) / config.gravity * 0.45; // based on jump parabola horizontal travel window (approx)
-      if (obstacle.x - (prev.x + prev.width) < minHorizontalGapPx) {
-        obstacle.x = prev.x + prev.width + minHorizontalGapPx;
+      // Minimal time gap: 55% of full flight + small landing window (0.08s) scaled by difficulty (hard reduces by 10%)
+      const landingWindow = 0.08;
+      const difficultyFactor: Record<MarioGameSettings["difficulty"], number> = { easy: 1.0, normal: 0.9, hard: 0.8 };
+      const minTimeGap = (flightTime * 0.55 + landingWindow) * difficultyFactor[difficulty];
+      // Add influence of previous obstacle width (convert to time by dividing by speed, scaled)
+      const widthTime = (prev.width / config.speed) * 0.5;
+      const requiredTime = minTimeGap + widthTime;
+      const requiredPx = requiredTime * config.speed;
+      const currentGap = obstacle.x - (prev.x + prev.width);
+      if (currentGap < requiredPx) {
+        obstacle.x = prev.x + prev.width + requiredPx;
       }
     }
     obstaclesRef.current.push(obstacle);
-  }, [config.gravity, config.jumpVelocity]);
+  }, [config.gravity, config.jumpVelocity, config.speed, difficulty]);
+
+  // Schedule next heart spawn (rarer than obstacles)
+  const scheduleNextHeart = useCallback((now: number) => {
+    const ranges: Record<MarioGameSettings["difficulty"], [number, number]> = {
+      easy: [9000, 14000],
+      normal: [10000, 16000],
+      hard: [11000, 17000]
+    };
+    const [minH, maxH] = ranges[difficulty];
+    heartLastSpawnRef.current = now;
+    heartNextSpawnDelayRef.current = minH + Math.random() * (maxH - minH);
+  }, [difficulty]);
+
+  // Spawn heart pickup
+  const spawnHeart = useCallback(() => {
+    const canvas = canvasRef.current; if (!canvas) return;
+    const size = 34 + Math.random()*10; // 34-44
+    const heightAboveGround = 110 + Math.random()*70; // vertical position variation
+    const hue = 330 + Math.random()*30; // pink-red range
+    const heart: HeartPickup = {
+      id: performance.now() + Math.random(),
+      x: (parseInt(canvas.style.width) || canvas.width) + 60,
+      size,
+      heightAboveGround,
+      collected: false,
+      hue
+    };
+    // Ensure not too close to previous heart
+    const prev = heartsRef.current[heartsRef.current.length - 1];
+    if (prev && heart.x - prev.x < 420) heart.x = prev.x + 420;
+    heartsRef.current.push(heart);
+  }, []);
 
   // Input handling
   const attemptJump = useCallback(() => {
@@ -151,11 +207,15 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
     setGameOver(false);
     setIsRunning(true);
     obstaclesRef.current = [];
+    heartsRef.current = [];
     playerRef.current.y = 0; playerRef.current.vy = 0; playerRef.current.grounded = true;
     lastSpawnRef.current = 0; nextSpawnDelayRef.current = 0; lastTsRef.current = 0;
+    heartLastSpawnRef.current = 0; heartNextSpawnDelayRef.current = 0;
     // Spawn an initial obstacle shortly after reset so player sees one
     setTimeout(() => { spawnObstacle(); }, 500);
-  }, [spawnObstacle]);
+    // Delay first heart so player settles
+    setTimeout(() => { spawnHeart(); }, 3500);
+  }, [spawnObstacle, spawnHeart]);
 
   // Main loop effect: dependencies intentionally exclude 'score' to avoid reinitializing spawn timers each frame
   useEffect(() => {
@@ -208,7 +268,14 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
         scheduleNextSpawn(ts);
       }
 
-      // Update obstacles positions
+      // Heart spawn schedule
+      if (heartNextSpawnDelayRef.current <= 0) scheduleNextHeart(ts);
+      if (ts - heartLastSpawnRef.current > heartNextSpawnDelayRef.current) {
+        spawnHeart();
+        scheduleNextHeart(ts);
+      }
+
+  // Update obstacles positions
       const obs = obstaclesRef.current;
       for (let i=0;i<obs.length;i++) {
         obs[i].x -= config.speed * dt;
@@ -216,7 +283,12 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
       // Remove off-screen
       while (obs.length && obs[0].x + obs[0].width < -40) obs.shift();
 
-      // Collision detection
+  // Update hearts positions
+  const hearts = heartsRef.current;
+  for (let i=0;i<hearts.length;i++) hearts[i].x -= config.speed * dt;
+  while (hearts.length && hearts[0].x + hearts[0].size < -40) hearts.shift();
+
+  // Collision detection
   const playerTop = groundY - player.height + player.y; // y negative when airborne
     // Adjusted playerTop calculation for clarity
       const playerLeft = player.x;
@@ -249,6 +321,27 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
         }
       }
 
+      // Heart collision (AABB approximation)
+      for (let i=0;i<hearts.length;i++) {
+        const heart = hearts[i]; if (heart.collected) continue;
+        const hx = heart.x; const hs = heart.size;
+        const hTop = groundY - heart.heightAboveGround - hs*0.5; // approximate top
+        const hBottom = hTop + hs; // approximate bottom
+        if (playerRight > hx && playerLeft < hx + hs && playerBottom > hTop && playerTop < hBottom) {
+          heart.collected = true;
+          setLives(l => {
+            const next = Math.min(l + 1, 9); // cap lives
+            if (next !== l) {
+              setLivesFlash(true);
+              setTimeout(() => setLivesFlash(false), 600);
+            }
+            return next;
+          });
+        }
+      }
+      // Remove collected hearts
+      for (let i=hearts.length-1;i>=0;i--) if (hearts[i].collected) hearts.splice(i,1);
+
       // Score update (distance -> convert px to meters with factor)
       setScore(s => s + config.speed * dt / 50);
 
@@ -278,7 +371,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
         ctx.fillRect(x, groundY + 16, 50, 6);
       }
 
-      // Obstacles (support browsers without roundRect)
+  // Obstacles (support browsers without roundRect)
   // Type guard for roundRect support
   type CtxWithRoundRect = CanvasRenderingContext2D & { roundRect?: (x:number,y:number,w:number,h:number,radius:number|number[])=>CanvasRenderingContext2D };
   const ctxRR = ctx as CtxWithRoundRect;
@@ -297,6 +390,33 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
         ctx.shadowColor = o.color + "99"; ctx.shadowBlur = 8; ctx.shadowOffsetX = 0; ctx.shadowOffsetY = 0;
         ctx.fillStyle = o.color + "33"; ctx.fillRect(o.x, groundY - 2, o.width, 2);
         ctx.shadowBlur = 0;
+      }
+
+      // Hearts (draw after obstacles, before player)
+      const t = ts / 1000;
+      for (const heart of hearts) {
+        const bob = Math.sin(t * 3 + heart.id) * 6;
+        const pulse = (Math.sin(t * 6 + heart.id) * 0.15) + 0.85;
+        const s = heart.size * pulse;
+        const x = heart.x;
+        const y = groundY - heart.heightAboveGround + bob;
+        const grad = ctx.createLinearGradient(x, y, x, y + s);
+        grad.addColorStop(0, `hsl(${heart.hue} 95% 70%)`);
+        grad.addColorStop(1, `hsl(${heart.hue} 70% 48%)`);
+        ctx.fillStyle = grad;
+        ctx.beginPath();
+        // Heart shape path
+        ctx.moveTo(x + s/2, y + s*0.75);
+        ctx.bezierCurveTo(x + s*1.15, y + s*0.25, x + s*0.85, y - s*0.2, x + s/2, y + s*0.05);
+        ctx.bezierCurveTo(x + s*0.15, y - s*0.2, x - s*0.15, y + s*0.25, x + s/2, y + s*0.75);
+        ctx.fill();
+        // Glow
+        ctx.shadowColor = `hsl(${heart.hue} 100% 65% / .65)`; ctx.shadowBlur = 12; ctx.fill(); ctx.shadowBlur = 0;
+        // Outline
+        ctx.lineWidth = 1.8; ctx.strokeStyle = `hsl(${heart.hue} 60% 35%)`; ctx.stroke();
+        // Sparkle highlight
+        ctx.fillStyle = "rgba(255,255,255,.75)";
+        ctx.beginPath(); ctx.ellipse(x + s*0.62, y + s*0.18, s*0.12, s*0.18, -0.7, 0, Math.PI*2); ctx.fill();
       }
 
       // Player (simple styled capsule)
@@ -331,10 +451,11 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   // Immediate first obstacle for visibility
   spawnObstacle();
   scheduleNextSpawn(performance.now());
+  scheduleNextHeart(performance.now() + 4000);
     rafRef.current = requestAnimationFrame(render);
     return () => cancelAnimationFrame(rafRef.current);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config.gravity, config.jumpVelocity, config.speed, isPaused, isRunning, gameOver, scheduleNextSpawn, spawnObstacle]);
+  }, [config.gravity, config.jumpVelocity, config.speed, isPaused, isRunning, gameOver, scheduleNextSpawn, spawnObstacle, scheduleNextHeart, spawnHeart]);
 
   // Resize
   useEffect(() => {
@@ -366,7 +487,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
           <div className="divider" />
           <div className="score-block">
             <span className="label">Lives</span>
-            <span className={`score-value lives ${lives<=1?"danger":""}`}>{lives}</span>
+            <span className={`score-value lives ${lives<=1?"danger":""} ${livesFlash?"gain":""}`}>{lives}</span>
           </div>
           <div className="divider" />
           <div className="score-block">
