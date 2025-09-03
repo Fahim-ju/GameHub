@@ -81,7 +81,11 @@
   font-size: 20px;
   color: #ff4fb0;
   text-shadow: 0 0 6px #ff008899;
-  min-width: 40px;
+  min-width: 60px;
+  font-family: 'Roboto Mono', 'Menlo', 'Consolas', monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.5px;
 }
 .score-panel .score-value.lives {
   color: #36e3ff;
@@ -180,6 +184,8 @@
   overflow: hidden;
   background: #0d141c;
   aspect-ratio: 16/9;
+  /* Prevent height jitter from fractional pixel rounding when width animates or reflows */
+  contain: layout paint;
 }
 .canvas-shell canvas {
   display: block;

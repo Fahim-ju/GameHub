@@ -41,12 +41,14 @@ const difficultyConfigs: Record<MarioGameSettings["difficulty"], DifficultyConfi
 
 const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSettings }) => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const shellRef = useRef<HTMLDivElement | null>(null);
+  const resizeTimeoutRef = useRef<number | null>(null);
 
   // Game state
   const [isPaused, setIsPaused] = useState(false);
   const [isRunning, setIsRunning] = useState(true);
-  const [score, setScore] = useState(0); // distance in meters
+  // Score shown in UI (integer). We accumulate actual progress in a ref and only update state ~10fps to avoid layout thrash.
+  const [score, setScore] = useState(0); // distance in meters (integer)
   const [highScore, setHighScore] = useState(0);
   const [lives, setLives] = useState(3);
   const [gameOver, setGameOver] = useState(false);
@@ -61,6 +63,8 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   const heartNextSpawnDelayRef = useRef<number>(0);
   const rafRef = useRef<number>(0);
   const lastTsRef = useRef<number>(0);
+  const scoreRef = useRef<number>(0); // precise accumulated score (float)
+  const lastScoreUiUpdateRef = useRef<number>(0); // timestamp of last React state update
 
   // Player physics
   const playerRef = useRef({
@@ -77,15 +81,20 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
 
   const resizeCanvas = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return;
-    const parent = containerRef.current; if (!parent) return;
-    const w = Math.min(parent.clientWidth, 980);
+    const shell = shellRef.current; if (!shell) return;
+    const w = shell.clientWidth;
     const h = Math.round(w * 9/16); // maintain 16:9
-    canvas.width = w * window.devicePixelRatio;
-    canvas.height = h * window.devicePixelRatio;
-    canvas.style.width = w + "px";
-    canvas.style.height = h + "px";
+    const dpr = window.devicePixelRatio || 1;
+    // Skip if size unchanged to avoid triggering additional layout / flicker
+    if (canvas.width === w * dpr && canvas.height === h * dpr) return;
+    canvas.width = Math.round(w * dpr);
+    canvas.height = Math.round(h * dpr);
     const ctx = canvas.getContext("2d");
-    if (ctx) ctx.scale(window.devicePixelRatio, window.devicePixelRatio);
+    if (ctx) {
+      // Reset any previous scaling (was causing compounding scale + flicker when resize fired repeatedly)
+      ctx.setTransform(1,0,0,1,0,0);
+      ctx.scale(dpr, dpr);
+    }
   }, []);
 
   // Spawn logic
@@ -116,7 +125,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
 
   const spawnObstacle = useCallback(() => {
     const canvas = canvasRef.current; if (!canvas) return;
-    const h = parseInt(canvas.style.height) || 540;
+    const h = canvas.height / window.devicePixelRatio;
     const groundY = h - 70; // ground baseline
     const baseHeight = 32 + Math.random() * 42; // candidate height
     const width = 32 + Math.random() * 28; // obstacle width
@@ -128,7 +137,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
     const maxAllowed = Math.min(jumpApex - clearance, groundY * 0.55);
     const obstacle: Obstacle = {
       id: performance.now() + Math.random(),
-      x: (parseInt(canvas.style.width) || canvas.width) + 20,
+      x: (canvas.width / window.devicePixelRatio) + 20,
       width,
       height: Math.max(24, Math.min(baseHeight, maxAllowed)),
       color: colors[Math.floor(Math.random()*colors.length)],
@@ -174,7 +183,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
     const hue = 330 + Math.random()*30; // pink-red range
     const heart: HeartPickup = {
       id: performance.now() + Math.random(),
-      x: (parseInt(canvas.style.width) || canvas.width) + 60,
+      x: (canvas.width / window.devicePixelRatio) + 60,
       size,
       heightAboveGround,
       collected: false,
@@ -202,7 +211,9 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   }, [gameOver]);
 
   const resetGame = useCallback(() => {
-    setScore(0);
+  setScore(0);
+  scoreRef.current = 0;
+  lastScoreUiUpdateRef.current = 0;
     setLives(3);
     setGameOver(false);
     setIsRunning(true);
@@ -248,8 +259,8 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
       const dt = (ts - lastTsRef.current) / 1000; // seconds
       lastTsRef.current = ts;
 
-      const width = parseInt(canvas.style.width) || canvas.width / window.devicePixelRatio;
-      const height = parseInt(canvas.style.height) || canvas.height / window.devicePixelRatio;
+      const width = canvas.width / window.devicePixelRatio;
+      const height = canvas.height / window.devicePixelRatio;
       const groundY = height - 70; // ground baseline
 
       // Physics update
@@ -306,7 +317,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
           setLives(l => {
             const nl = l - 1;
             if (nl <= 0) {
-              setGameOver(true); setIsRunning(false); setHighScore(h => Math.max(h, Math.floor(score)));
+              setGameOver(true); setIsRunning(false); setHighScore(h => Math.max(h, Math.floor(scoreRef.current)));
             } else {
               // brief invulnerability / knockback
               player.vy = -config.jumpVelocity * .6;
@@ -342,8 +353,12 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
       // Remove collected hearts
       for (let i=hearts.length-1;i>=0;i--) if (hearts[i].collected) hearts.splice(i,1);
 
-      // Score update (distance -> convert px to meters with factor)
-      setScore(s => s + config.speed * dt / 50);
+      // Score accumulation (distance -> convert px to meters). Throttle UI updates to reduce layout flicker.
+      scoreRef.current += (config.speed * dt) / 50;
+      if (ts - lastScoreUiUpdateRef.current > 100) { // update roughly every 100ms
+        lastScoreUiUpdateRef.current = ts;
+        setScore(Math.floor(scoreRef.current));
+      }
 
       // Drawing
       ctx.clearRect(0,0,width,height);
@@ -453,21 +468,33 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
   scheduleNextSpawn(performance.now());
   scheduleNextHeart(performance.now() + 4000);
     rafRef.current = requestAnimationFrame(render);
-    return () => cancelAnimationFrame(rafRef.current);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+  return () => cancelAnimationFrame(rafRef.current);
   }, [config.gravity, config.jumpVelocity, config.speed, isPaused, isRunning, gameOver, scheduleNextSpawn, spawnObstacle, scheduleNextHeart, spawnHeart]);
 
   // Resize
   useEffect(() => {
+    const shell = shellRef.current; if (!shell) return;
+    const resizeObserver = new ResizeObserver(() => {
+      // Debounce resize calls to prevent flickering
+      if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
+      resizeTimeoutRef.current = window.setTimeout(() => {
+        resizeCanvas();
+        resizeTimeoutRef.current = null;
+      }, 100);
+    });
+    resizeObserver.observe(shell);
+    // Initial resize
     resizeCanvas();
-    window.addEventListener("resize", resizeCanvas);
-    return () => window.removeEventListener("resize", resizeCanvas);
+    return () => {
+      resizeObserver.disconnect();
+      if (resizeTimeoutRef.current) clearTimeout(resizeTimeoutRef.current);
+    };
   }, [resizeCanvas]);
 
   useEffect(() => { setHighScore(h => Math.max(h, Math.floor(score))); }, [gameOver, score]);
 
   return (
-    <div className="mario-game-wrapper" ref={containerRef}>
+    <div className="mario-game-wrapper">
       <div className="mario-game-top-bar">
         <div className="score-panel">
           <div className="player-block">
@@ -502,7 +529,7 @@ const MarioGame: React.FC<MarioGameProps> = ({ playerName, difficulty, backToSet
           <button onClick={backToSettings}>Back</button>
         </div>
       </div>
-      <div className="canvas-shell">
+      <div className="canvas-shell" ref={shellRef}>
         <canvas ref={canvasRef} aria-label="Mario Runner Game" />
         {gameOver && (
           <div className="overlay">
