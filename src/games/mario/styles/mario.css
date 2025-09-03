@@ -1,0 +1,299 @@
+/* Mario runner game styles */
+.mario-game-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+  width: 100%;
+  padding: 16px 0 46px 0;
+  font-family: "Orbitron Variable", system-ui, sans-serif;
+  color: #eee;
+  position: relative;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.mario-game-top-bar {
+  width: min(980px, 95%);
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.score-panel {
+  display: flex;
+  align-items: stretch;
+  gap: 18px;
+  background: linear-gradient(145deg, #1c2030, #232b3e 55%, #1a2130);
+  border: 1px solid #303b4d;
+  padding: 12px 22px;
+  border-radius: 16px;
+  position: relative;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.5), 0 0 0 3px rgba(255, 255, 255, 0.02);
+  min-width: 340px;
+}
+.score-panel:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, #ff00886e, #ffa02e3d 35%, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.score-panel .player-block,
+.score-panel .score-block {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.score-panel .label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 1.3px;
+  opacity: 0.65;
+}
+.score-panel .player-name {
+  font-weight: 600;
+  font-size: 15px;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.score-panel .score-value {
+  font-weight: 700;
+  font-size: 20px;
+  color: #ff4fb0;
+  text-shadow: 0 0 6px #ff008899;
+  min-width: 60px;
+  font-family: 'Roboto Mono', 'Menlo', 'Consolas', monospace;
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0.5px;
+}
+.score-panel .score-value.lives {
+  color: #36e3ff;
+  text-shadow: 0 0 6px #1fb0ff99;
+}
+.score-panel .score-value.lives.danger {
+  color: #ff3d3d;
+  text-shadow: 0 0 6px #ff000099;
+}
+.score-panel .score-value.lives.gain {
+  animation: lifeGainFlash 0.6s ease;
+  color: #8dff9c;
+  text-shadow: 0 0 8px #49ff6fAA, 0 0 16px #49ff6f55;
+}
+@keyframes lifeGainFlash {
+  0% { transform: scale(1); filter: brightness(1); }
+  30% { transform: scale(1.3); filter: brightness(1.4); }
+  60% { transform: scale(0.95); filter: brightness(1.15); }
+  100% { transform: scale(1); filter: brightness(1); }
+}
+.score-panel .divider {
+  width: 1px;
+  background: linear-gradient(to bottom, #ffffff08, #ffffff25, #ffffff08);
+}
+.difficulty-badge {
+  font-size: 12px;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 24px;
+  font-weight: 600;
+  background: #303b4d;
+  letter-spacing: 1px;
+}
+.difficulty-badge[data-diff="easy"] {
+  background: #254b2c;
+  color: #8dff9c;
+  box-shadow: 0 0 0 1px #2e6a39, inset 0 0 6px #49ff6f33;
+}
+.difficulty-badge[data-diff="normal"] {
+  background: #253f4b;
+  color: #4dd7ff;
+  box-shadow: 0 0 0 1px #2c5764, inset 0 0 6px #4dd7ff33;
+}
+.difficulty-badge[data-diff="hard"] {
+  background: #4b2525;
+  color: #ff6060;
+  box-shadow: 0 0 0 1px #6a2e2e, inset 0 0 6px #ff606033;
+}
+
+.controls-inline {
+  display: flex;
+  gap: 10px;
+}
+.controls-inline button {
+  background: #ff0088;
+  border: none;
+  color: #fff;
+  padding: 10px 18px;
+  font-weight: 600;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  letter-spacing: 0.5px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.45);
+  transition: background 0.2s, transform 0.15s;
+  position: relative;
+  overflow: hidden;
+}
+.controls-inline button:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(120deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0) 60%);
+  opacity: 0;
+  transition: opacity 0.25s;
+}
+.controls-inline button:hover {
+  background: #ffa02e;
+}
+.controls-inline button:hover:before {
+  opacity: 1;
+}
+.controls-inline button:active {
+  transform: translateY(2px);
+}
+.controls-inline button:disabled {
+  background: #444;
+  cursor: not-allowed;
+}
+
+.canvas-shell {
+  position: relative;
+  width: min(980px, 95%);
+  border-radius: 20px;
+  box-shadow: 0 8px 30px -6px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.06), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+  overflow: hidden;
+  background: #0d141c;
+  aspect-ratio: 16/9;
+  /* Prevent height jitter from fractional pixel rounding when width animates or reflows */
+  contain: layout paint;
+}
+.canvas-shell canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  outline: none;
+  image-rendering: crisp-edges;
+}
+
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  backdrop-filter: blur(6px) brightness(0.85);
+  background: radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.75));
+  animation: fadeIn 0.3s ease;
+}
+.overlay.paused {
+  backdrop-filter: blur(3px) brightness(0.75);
+}
+.dialog {
+  background: linear-gradient(145deg, #151e29, #1e2937 55%, #10171f);
+  padding: 34px 40px 40px;
+  border-radius: 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  border: 1px solid #2c3949;
+  box-shadow: 0 8px 24px -6px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  position: relative;
+}
+.dialog:before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(120deg, #ff008899, #ffa02e55, transparent 70%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.dialog.compact {
+  padding: 24px 34px 30px;
+}
+.dialog h2,
+h3 {
+  margin: 0;
+  font-weight: 700;
+  letter-spacing: 1px;
+  background: linear-gradient(90deg, #ff4fb0, #ffa02e);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+.dialog p {
+  margin: 0;
+  font-size: 14px;
+  opacity: 0.85;
+}
+.dialog .buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 6px;
+}
+.dialog .buttons button {
+  background: #ff0088;
+  border: none;
+  color: #fff;
+  padding: 10px 20px;
+  font-weight: 600;
+  border-radius: 12px;
+  cursor: pointer;
+  font-size: 14px;
+  box-shadow: 0 4px 14px -4px #ff008866;
+  transition: background 0.2s;
+}
+.dialog .buttons button:hover {
+  background: #ffa02e;
+}
+.dialog small {
+  font-size: 11px;
+  opacity: 0.6;
+}
+
+.hint-bar {
+  font-size: 12px;
+  opacity: 0.55;
+  letter-spacing: 0.8px;
+  text-transform: uppercase;
+}
+
+@media (max-width: 720px) {
+  .score-panel {
+    flex-wrap: wrap;
+    gap: 14px;
+  }
+  .mario-game-top-bar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .controls-inline {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}

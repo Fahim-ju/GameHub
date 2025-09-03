@@ -33,6 +33,15 @@ const GamePage: React.FC = () => {
         </div>
       </React.Suspense>
     );
+  } else if (gameName === EnumGameId.Mario) {
+    const MarioInitialPage = React.lazy(() => import("../games/mario/MarioInitialPage"));
+    return (
+      <React.Suspense fallback={<Loading />}>
+        <div className="mario-container">
+          <MarioInitialPage />
+        </div>
+      </React.Suspense>
+    );
   }
 };
 
